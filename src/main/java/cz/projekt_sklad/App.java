@@ -1,4 +1,4 @@
-package org.example;
+package cz.projekt_sklad;
 
 /**
  * Hello world!
