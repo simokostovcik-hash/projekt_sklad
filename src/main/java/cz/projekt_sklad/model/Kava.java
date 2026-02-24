@@ -12,10 +12,8 @@ public class Kava {
     private int gramaz;
     private int cena;
 
-    // Konstruktory
     public Kava() {}
 
-    // Gettery a Settery (v IntelliJ vygeneruješ přes Alt+Insert)
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public String getNazev() { return nazev; }
