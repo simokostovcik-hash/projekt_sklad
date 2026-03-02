@@ -1,8 +1,11 @@
 package cz.projekt_sklad.controller;
 
 import cz.projekt_sklad.model.Kava;
+import cz.projekt_sklad.model.Uzivatel;
 import cz.projekt_sklad.repository.KavaRepository;
+import cz.projekt_sklad.repository.UzivatelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +18,30 @@ public class SkladController {
     @Autowired
     private KavaRepository kavaRepository;
 
+    @Autowired
+    private UzivatelRepository uzivatelRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/")
     public String index() {
         return "index";
+    }
+
+    @GetMapping("/register")
+    public String ukazFormularRegistrace() {
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String provedRegistraci(@RequestParam String username, @RequestParam String password) {
+        Uzivatel novy = new Uzivatel();
+        novy.setUsername(username);
+        novy.setPassword(passwordEncoder.encode(password));
+        novy.setRole("ROLE_ADMIN");
+        uzivatelRepository.save(novy);
+        return "redirect:/login";
     }
 
     @GetMapping("/kava/vse")
@@ -33,7 +57,6 @@ public class SkladController {
 
         model.addAttribute("pocet", pocetDruhu);
         model.addAttribute("celkem", celkovaCena);
-
         return "sklad";
     }
 
@@ -69,5 +92,4 @@ public class SkladController {
         }
         return "redirect:/kava/vse";
     }
-
 }
