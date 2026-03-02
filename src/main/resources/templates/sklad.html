@@ -2,32 +2,44 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Sklad kávy</title>
+    <title>Správa skladu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<h1>Sklad kávových zásob</h1>
-<a href="/kava/pridat">➕ Přidat novou kávu</a>
-<br><br>
-<table border="1">
-    <thead>
+<body class="container py-5">
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>📦 Skladové zásoby</h1>
+    <a href="/kava/pridat" class="btn btn-success">+ Přidat kávu</a>
+</div>
+
+<table class="table table-hover shadow-sm">
+    <thead class="table-dark">
     <tr>
+        <th>ID</th>
         <th>Název</th>
         <th>Gramáž (g)</th>
         <th>Cena (Kč)</th>
-        <th>Akce</th>
+        <th class="text-center">Akce</th>
     </tr>
     </thead>
     <tbody>
-    <tr th:each="kava : ${seznamKav}">
-        <td th:text="${kava.nazev}">Název</td>
-        <td th:text="${kava.gramaz}">0</td>
-        <td th:text="${kava.cena}">0</td>
-        <td>
-            <a th:href="@{'/kava/smazat/' + ${kava.id}}"
-               onclick="return confirm('Opravdu smazat?')">❌ Smazat</a>
+    <tr th:each="k : ${seznamKav}">
+        <td th:text="${k.id}">1</td>
+        <td th:text="${k.nazev}" class="fw-bold">Název</td>
+        <td th:text="${k.gramaz}">0</td>
+        <td th:text="${k.cena}">0</td>
+        <td class="text-center">
+            <a th:href="@{'/kava/upravit/' + ${k.id}}" class="btn btn-sm btn-outline-primary">✏️ Upravit</a>
+            <a th:href="@{'/kava/smazat/' + ${k.id}}" class="btn btn-sm btn-outline-danger"
+               onclick="return confirm('Opravdu odstranit z databáze?')">🗑️ Smazat</a>
         </td>
     </tr>
     </tbody>
 </table>
+<div class="mt-4 p-3 bg-light rounded border shadow-sm">
+    <p class="mb-1">📊 <strong>Statistiky skladu:</strong></p>
+    <span>Celkem druhů: <span th:text="${pocet}" class="badge bg-secondary">0</span></span>
+    <span class="ms-3">Hodnota zásob: <span th:text="${celkem} + ' Kč'" class="badge bg-primary">0 Kč</span></span>
+</div>
+<a href="/" class="btn btn-link text-secondary mt-3">← Zpět na úvod</a>
 </body>
 </html>

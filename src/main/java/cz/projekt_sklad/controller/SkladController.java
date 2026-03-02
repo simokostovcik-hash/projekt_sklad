@@ -3,49 +3,54 @@ package cz.projekt_sklad.controller;
 import cz.projekt_sklad.model.Kava;
 import cz.projekt_sklad.repository.KavaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller; // ZMĚNA: importujeme Controller
-import org.springframework.ui.Model; // Pro předávání dat do HTML
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
-@Controller // ZMĚNA: už ne @RestController, aby fungovalo HTML
+import java.util.Optional;
+
+@Controller
 public class SkladController {
 
     @Autowired
     private KavaRepository kavaRepository;
 
     @GetMapping("/")
-    public String uvodniStranka() {
-        return "sklad"; // Spring hledá soubor sklad.html v templates
+    public String index() {
+        return "index";
     }
 
     @GetMapping("/kava/vse")
     public String zobrazSklad(Model model) {
-        model.addAttribute("seznamKav", kavaRepository.findAll());
+        Iterable<Kava> vsechnyKavy = kavaRepository.findAll();
+        model.addAttribute("seznamKav", vsechnyKavy);
+
+        long pocetDruhu = kavaRepository.count();
+        int celkovaCena = 0;
+        for (Kava k : vsechnyKavy) {
+            celkovaCena += k.getCena();
+        }
+
+        model.addAttribute("pocet", pocetDruhu);
+        model.addAttribute("celkem", celkovaCena);
+
         return "sklad";
     }
 
-    // Metoda pro zobrazení formuláře
     @GetMapping("/kava/pridat")
-    public String ukazFormular() {
-        return "formular"; // Hledá soubor formular.html
+    public String formularPridat(Model model) {
+        model.addAttribute("kava", new Kava());
+        model.addAttribute("typyKav", new String[]{"Arabica", "Robusta", "Espresso Blend", "Bezkofeinová", "Liberecká směs"});
+        return "formular";
     }
 
-    // Metoda pro uložení dat z formuláře
     @PostMapping("/kava/ulozit")
-    public String ulozitKavu(@RequestParam String nazev,
-                             @RequestParam int gramaz,
-                             @RequestParam int cena) {
-        Kava novaKava = new Kava();
-        novaKava.setNazev(nazev);
-        novaKava.setGramaz(gramaz);
-        novaKava.setCena(cena);
-
-        kavaRepository.save(novaKava);
-
-        return "redirect:/kava/vse"; // Po uložení nás pošle zpět na seznam
+    public String ulozitKavu(@ModelAttribute Kava kava) {
+        if (kava.getNazev() == null || kava.getNazev().isEmpty() || kava.getCena() <= 0 || kava.getGramaz() <= 0) {
+            return "redirect:/kava/pridat";
+        }
+        kavaRepository.save(kava);
+        return "redirect:/kava/vse";
     }
 
     @GetMapping("/kava/smazat/{id}")
@@ -53,4 +58,16 @@ public class SkladController {
         kavaRepository.deleteById(id);
         return "redirect:/kava/vse";
     }
+
+    @GetMapping("/kava/upravit/{id}")
+    public String upravitKavu(@PathVariable Integer id, Model model) {
+        Optional<Kava> kava = kavaRepository.findById(id);
+        if (kava.isPresent()) {
+            model.addAttribute("kava", kava.get());
+            model.addAttribute("typyKav", new String[]{"Arabica", "Robusta", "Espresso Blend", "Bezkofeinová", "Liberecká směs"});
+            return "formular";
+        }
+        return "redirect:/kava/vse";
+    }
+
 }
