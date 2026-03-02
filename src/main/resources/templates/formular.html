@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Přidat kávu</title>
+</head>
+<body>
+<h1>Nová káva do skladu</h1>
+<form action="/kava/ulozit" method="post">
+    Název: <input type="text" name="nazev" required><br>
+    Gramáž: <input type="number" name="gramaz" required><br>
+    Cena: <input type="number" name="cena" required><br>
+    <button type="submit">Uložit kávu</button>
+</form>
+<br>
+<a href="/kava/vse">Zpět na seznam</a>
+</body>
+</html>

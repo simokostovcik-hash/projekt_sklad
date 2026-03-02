@@ -3,39 +3,54 @@ package cz.projekt_sklad.controller;
 import cz.projekt_sklad.model.Kava;
 import cz.projekt_sklad.repository.KavaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller; // ZMĚNA: importujeme Controller
+import org.springframework.ui.Model; // Pro předávání dat do HTML
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@RestController
+@Controller // ZMĚNA: už ne @RestController, aby fungovalo HTML
 public class SkladController {
 
     @Autowired
-    private KavaRepository kavaRepository; // Propojení s databází
+    private KavaRepository kavaRepository;
 
     @GetMapping("/")
     public String uvodniStranka() {
-        return "<h1>Vítejte v systému Sklad Kávy</h1>" +
-                "<ul>" +
-                "<li><a href='/kava/vse'>Zobrazit všechny kávy</a></li>" +
-                "<li><a href='/kava/pridat-test'>Přidat testovací kávu</a></li>" +
-                "</ul>";
+        return "sklad"; // Spring hledá soubor sklad.html v templates
     }
 
     @GetMapping("/kava/vse")
-    public Iterable<Kava> getVsechnyKavy() {
-        // Tohle vrátí data z databáze ve formátu JSON
-        return kavaRepository.findAll();
+    public String zobrazSklad(Model model) {
+        model.addAttribute("seznamKav", kavaRepository.findAll());
+        return "sklad";
     }
 
-    @GetMapping("/kava/pridat-test")
-    public String pridatTest() {
-        Kava testKava = new Kava();
-        testKava.setNazev("Testovací Arabica");
-        testKava.setCena(250);
-        testKava.setGramaz(500);
+    // Metoda pro zobrazení formuláře
+    @GetMapping("/kava/pridat")
+    public String ukazFormular() {
+        return "formular"; // Hledá soubor formular.html
+    }
 
-        kavaRepository.save(testKava); // Uloží kávu do SQLite
+    // Metoda pro uložení dat z formuláře
+    @PostMapping("/kava/ulozit")
+    public String ulozitKavu(@RequestParam String nazev,
+                             @RequestParam int gramaz,
+                             @RequestParam int cena) {
+        Kava novaKava = new Kava();
+        novaKava.setNazev(nazev);
+        novaKava.setGramaz(gramaz);
+        novaKava.setCena(cena);
 
-        return "Káva byla uložena! <a href='/'>Zpět na hlavní stránku</a>";
+        kavaRepository.save(novaKava);
+
+        return "redirect:/kava/vse"; // Po uložení nás pošle zpět na seznam
+    }
+
+    @GetMapping("/kava/smazat/{id}")
+    public String smazatKavu(@PathVariable Integer id) {
+        kavaRepository.deleteById(id);
+        return "redirect:/kava/vse";
     }
 }

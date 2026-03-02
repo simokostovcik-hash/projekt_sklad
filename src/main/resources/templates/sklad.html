@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sklad kávy</title>
+</head>
+<body>
+<h1>Sklad kávových zásob</h1>
+<a href="/kava/pridat">➕ Přidat novou kávu</a>
+<br><br>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Název</th>
+        <th>Gramáž (g)</th>
+        <th>Cena (Kč)</th>
+        <th>Akce</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="kava : ${seznamKav}">
+        <td th:text="${kava.nazev}">Název</td>
+        <td th:text="${kava.gramaz}">0</td>
+        <td th:text="${kava.cena}">0</td>
+        <td>
+            <a th:href="@{'/kava/smazat/' + ${kava.id}}"
+               onclick="return confirm('Opravdu smazat?')">❌ Smazat</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
