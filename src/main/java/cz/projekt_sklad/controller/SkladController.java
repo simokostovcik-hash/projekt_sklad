@@ -34,13 +34,18 @@ public class SkladController {
     @GetMapping("/kava/vse")
     public String zobrazSklad(Model model, @RequestParam(required = false) String hledat) {
         List<Kava> seznam;
+
         if (hledat != null && !hledat.isEmpty()) {
             seznam = kavaRepository.findByNazevContainingIgnoreCase(hledat);
+            model.addAttribute("hledano", hledat);
         } else {
             seznam = kavaRepository.findAll();
         }
+
         model.addAttribute("seznamKav", seznam);
-        model.addAttribute("hledat", hledat);
+        model.addAttribute("pocet", seznam.size());
+        model.addAttribute("celkem", seznam.stream().mapToInt(Kava::getCena).sum());
+
         return "sklad";
     }
 
@@ -97,7 +102,8 @@ public class SkladController {
     @PostMapping("/register")
     public String provedRegistraci(@ModelAttribute Uzivatel uzivatel, Model model) {
         if (uzivatelRepository.findByUsername(uzivatel.getUsername()).isPresent()) {
-            model.addAttribute("error", "Tento uživatel už existuje. Zvolte jiné jméno.");
+            model.addAttribute("error", "Toto uživatelské jméno je již obsazeno.");
+            model.addAttribute("uzivatel", uzivatel);
             return "register";
         }
 
