@@ -1,7 +1,9 @@
 package cz.projekt_sklad.controller;
 
+import cz.projekt_sklad.model.AuditLog;
 import cz.projekt_sklad.model.Kava;
 import cz.projekt_sklad.model.Uzivatel;
+import cz.projekt_sklad.repository.AuditLogRepository;
 import cz.projekt_sklad.repository.KavaRepository;
 import cz.projekt_sklad.repository.UzivatelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.security.Principal;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Controller
 public class SkladController {
@@ -22,74 +26,84 @@ public class SkladController {
     private UzivatelRepository uzivatelRepository;
 
     @Autowired
+    private AuditLogRepository auditLogRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @GetMapping("/")
-    public String index() {
-        return "index";
-    }
-
-    @GetMapping("/register")
-    public String ukazFormularRegistrace() {
-        return "register";
-    }
-
-    @PostMapping("/register")
-    public String provedRegistraci(@RequestParam String username, @RequestParam String password) {
-        Uzivatel novy = new Uzivatel();
-        novy.setUsername(username);
-        novy.setPassword(passwordEncoder.encode(password));
-        novy.setRole("ROLE_ADMIN");
-        uzivatelRepository.save(novy);
-        return "redirect:/login";
-    }
-
+    // --- SKLAD ---
     @GetMapping("/kava/vse")
     public String zobrazSklad(Model model) {
-        Iterable<Kava> vsechnyKavy = kavaRepository.findAll();
-        model.addAttribute("seznamKav", vsechnyKavy);
-
-        long pocetDruhu = kavaRepository.count();
-        int celkovaCena = 0;
-        for (Kava k : vsechnyKavy) {
-            celkovaCena += k.getCena();
-        }
-
-        model.addAttribute("pocet", pocetDruhu);
-        model.addAttribute("celkem", celkovaCena);
+        List<Kava> seznam = kavaRepository.findAll();
+        model.addAttribute("seznamKav", seznam);
+        model.addAttribute("pocet", seznam.size());
+        int celkem = seznam.stream().mapToInt(Kava::getCena).sum();
+        model.addAttribute("celkem", celkem);
         return "sklad";
     }
 
     @GetMapping("/kava/pridat")
-    public String formularPridat(Model model) {
+    public String zobrazFormular(Model model) {
         model.addAttribute("kava", new Kava());
-        model.addAttribute("typyKav", new String[]{"Arabica", "Robusta", "Espresso Blend", "Bezkofeinová", "Liberecká směs"});
         return "formular";
     }
 
     @PostMapping("/kava/ulozit")
-    public String ulozitKavu(@ModelAttribute Kava kava) {
-        if (kava.getNazev() == null || kava.getNazev().isEmpty() || kava.getCena() <= 0 || kava.getGramaz() <= 0) {
-            return "redirect:/kava/pridat";
-        }
+    public String ulozKavu(@ModelAttribute Kava kava, Principal principal) {
+        String autor = (principal != null) ? principal.getName() : "System";
         kavaRepository.save(kava);
+        auditLogRepository.save(new AuditLog(autor, "Přidána/Upravena káva: " + kava.getNazev(), LocalDateTime.now()));
         return "redirect:/kava/vse";
     }
 
     @GetMapping("/kava/smazat/{id}")
-    public String smazatKavu(@PathVariable Integer id) {
-        kavaRepository.deleteById(id);
+    public String smazatKavu(@PathVariable Long id, Principal principal) {
+        String autor = (principal != null) ? principal.getName() : "System";
+        kavaRepository.findById(id).ifPresent(k -> {
+            auditLogRepository.save(new AuditLog(autor, "Smazána káva: " + k.getNazev(), LocalDateTime.now()));
+            kavaRepository.delete(k);
+        });
         return "redirect:/kava/vse";
     }
 
-    @GetMapping("/kava/upravit/{id}")
-    public String upravitKavu(@PathVariable Integer id, Model model) {
-        Optional<Kava> kava = kavaRepository.findById(id);
-        if (kava.isPresent()) {
-            model.addAttribute("kava", kava.get());
-            model.addAttribute("typyKav", new String[]{"Arabica", "Robusta", "Espresso Blend", "Bezkofeinová", "Liberecká směs"});
-            return "formular";
-        }
-        return "redirect:/kava/vse";
+    // --- ADMIN PANEL (OPRAVENÝ) ---
+    @GetMapping("/admin/uzivatele")
+    public String zobrazAdminPanel(Model model) {
+        model.addAttribute("uzivatele", uzivatelRepository.findAll());
+        model.addAttribute("auditLogy", auditLogRepository.findAll());
+        return "admin_panel";
+    }
+
+    @PostMapping("/admin/zmenit-roli")
+    public String zmenitRoli(@RequestParam Long id, @RequestParam String novaRole, Principal principal) {
+        String autor = (principal != null) ? principal.getName() : "System";
+        uzivatelRepository.findById(id).ifPresent(u -> {
+            if (!u.getUsername().equals("admin")) {
+                u.setRole(novaRole);
+                uzivatelRepository.save(u);
+                auditLogRepository.save(new AuditLog(autor, "Změna role u " + u.getUsername() + " na " + novaRole, LocalDateTime.now()));
+            }
+        });
+        return "redirect:/admin/uzivatele";
+    }
+
+    // --- LOGIN / REGISTER ---
+    @GetMapping("/register")
+    public String ukazRegistraci(Model model) {
+        model.addAttribute("uzivatel", new Uzivatel());
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String provedRegistraci(@ModelAttribute Uzivatel uzivatel) {
+        uzivatel.setRole("ROLE_USER");
+        uzivatel.setPassword(passwordEncoder.encode(uzivatel.getPassword()));
+        uzivatelRepository.save(uzivatel);
+        return "redirect:/login?success";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 }

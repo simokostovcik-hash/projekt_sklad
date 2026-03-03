@@ -1,9 +1,9 @@
 package cz.projekt_sklad.repository;
 
 import cz.projekt_sklad.model.Kava;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface KavaRepository extends CrudRepository<Kava, Integer> {
+public interface KavaRepository extends JpaRepository<Kava, Long> {
 }
