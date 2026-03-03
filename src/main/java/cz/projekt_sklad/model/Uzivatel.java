@@ -14,7 +14,7 @@ public class Uzivatel {
     @Column(nullable = false)
     private String password;
 
-    private String role; // Např. "ROLE_ADMIN"
+    private String role;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

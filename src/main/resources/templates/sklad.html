@@ -60,13 +60,17 @@
 
     <div class="card shadow">
         <div class="table-responsive">
+            <form th:action="@{/kava/vse}" method="get" class="mb-4 d-flex gap-2">
+                <input type="text" name="hledat" class="form-control" placeholder="Hledat kávu..." th:value="${hledano}">
+                <button type="submit" class="btn btn-primary">Hledat</button>
+                <a href="/kava/vse" class="btn btn-outline-secondary">Zrušit</a>
+            </form>
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-dark">
                 <tr>
                     <th class="ps-4">Název kávy</th>
                     <th>Gramáž (g)</th>
                     <th>Cena (Kč)</th>
-
                     <th sec:authorize="hasRole('ADMIN')" class="text-center">Akce</th>
                 </tr>
                 </thead>

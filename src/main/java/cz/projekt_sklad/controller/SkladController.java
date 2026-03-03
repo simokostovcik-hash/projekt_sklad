@@ -31,14 +31,16 @@ public class SkladController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // --- SKLAD ---
     @GetMapping("/kava/vse")
-    public String zobrazSklad(Model model) {
-        List<Kava> seznam = kavaRepository.findAll();
+    public String zobrazSklad(Model model, @RequestParam(required = false) String hledat) {
+        List<Kava> seznam;
+        if (hledat != null && !hledat.isEmpty()) {
+            seznam = kavaRepository.findByNazevContainingIgnoreCase(hledat);
+        } else {
+            seznam = kavaRepository.findAll();
+        }
         model.addAttribute("seznamKav", seznam);
-        model.addAttribute("pocet", seznam.size());
-        int celkem = seznam.stream().mapToInt(Kava::getCena).sum();
-        model.addAttribute("celkem", celkem);
+        model.addAttribute("hledat", hledat);
         return "sklad";
     }
 
@@ -93,7 +95,12 @@ public class SkladController {
     }
 
     @PostMapping("/register")
-    public String provedRegistraci(@ModelAttribute Uzivatel uzivatel) {
+    public String provedRegistraci(@ModelAttribute Uzivatel uzivatel, Model model) {
+        if (uzivatelRepository.findByUsername(uzivatel.getUsername()).isPresent()) {
+            model.addAttribute("error", "Tento uživatel už existuje. Zvolte jiné jméno.");
+            return "register";
+        }
+
         uzivatel.setRole("ROLE_USER");
         uzivatel.setPassword(passwordEncoder.encode(uzivatel.getPassword()));
         uzivatelRepository.save(uzivatel);
