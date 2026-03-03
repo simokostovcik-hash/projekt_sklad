@@ -66,7 +66,6 @@ public class SkladController {
         return "redirect:/kava/vse";
     }
 
-    // --- ADMIN PANEL (OPRAVENÝ) ---
     @GetMapping("/admin/uzivatele")
     public String zobrazAdminPanel(Model model) {
         model.addAttribute("uzivatele", uzivatelRepository.findAll());
@@ -87,7 +86,6 @@ public class SkladController {
         return "redirect:/admin/uzivatele";
     }
 
-    // --- LOGIN / REGISTER ---
     @GetMapping("/register")
     public String ukazRegistraci(Model model) {
         model.addAttribute("uzivatel", new Uzivatel());
