@@ -2,9 +2,11 @@ package cz.projekt_sklad.controller;
 
 import cz.projekt_sklad.model.AuditLog;
 import cz.projekt_sklad.model.Kava;
+import cz.projekt_sklad.model.Prazirna;
 import cz.projekt_sklad.model.Uzivatel;
 import cz.projekt_sklad.repository.AuditLogRepository;
 import cz.projekt_sklad.repository.KavaRepository;
+import cz.projekt_sklad.repository.PrazirnaRepository;
 import cz.projekt_sklad.repository.UzivatelRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,22 +33,31 @@ public class SkladController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @GetMapping("/kava/vse")
-    public String zobrazSklad(Model model, @RequestParam(required = false) String hledat) {
-        List<Kava> seznam;
+    @Autowired
+    private PrazirnaRepository prazirnaRepository;
 
+    @GetMapping("/sklad")
+    public String uvodniMenu() {
+        return "sklad";
+    }
+
+
+    @GetMapping("/kava/vse")
+    public String zobrazVypisKavy(Model model, @RequestParam(required = false) String hledat) {
+        List<Kava> seznam;
         if (hledat != null && !hledat.isEmpty()) {
             seznam = kavaRepository.findByNazevContainingIgnoreCase(hledat);
             model.addAttribute("hledano", hledat);
         } else {
             seznam = kavaRepository.findAll();
         }
-
         model.addAttribute("seznamKav", seznam);
         model.addAttribute("pocet", seznam.size());
-        model.addAttribute("celkem", seznam.stream().mapToInt(Kava::getCena).sum());
 
-        return "sklad";
+        int celkem = seznam.stream().mapToInt(Kava::getCena).sum();
+        model.addAttribute("celkem", celkem);
+
+        return "vypis_kavy";
     }
 
     @GetMapping("/kava/pridat")
@@ -71,6 +82,31 @@ public class SkladController {
             kavaRepository.delete(k);
         });
         return "redirect:/kava/vse";
+    }
+
+
+    @GetMapping("/admin/prazirny")
+    public String vypisPrazirny(Model model) {
+        model.addAttribute("vsechnyPrazirny", prazirnaRepository.findAll());
+        return "prazirny_seznam";
+    }
+
+    @GetMapping("/admin/prazirna/nova")
+    public String novaPrazirnaForm(Model model) {
+        model.addAttribute("prazirna", new Prazirna());
+        return "prazirna_form";
+    }
+
+    @PostMapping("/admin/prazirna/ulozit")
+    public String ulozPrazirnu(@ModelAttribute("prazirna") Prazirna prazirna) {
+        prazirnaRepository.save(prazirna);
+        return "redirect:/admin/prazirny";
+    }
+
+    @GetMapping("/audit")
+    public String zobrazAudit(Model model) {
+        model.addAttribute("auditLogy", auditLogRepository.findAll());
+        return "admin_panel";
     }
 
     @GetMapping("/admin/uzivatele")
@@ -102,11 +138,9 @@ public class SkladController {
     @PostMapping("/register")
     public String provedRegistraci(@ModelAttribute Uzivatel uzivatel, Model model) {
         if (uzivatelRepository.findByUsername(uzivatel.getUsername()).isPresent()) {
-            model.addAttribute("error", "Toto uživatelské jméno je již obsazeno.");
-            model.addAttribute("uzivatel", uzivatel);
+            model.addAttribute("error", "Uživatel s tímto jménem již existuje!");
             return "register";
         }
-
         uzivatel.setRole("ROLE_USER");
         uzivatel.setPassword(passwordEncoder.encode(uzivatel.getPassword()));
         uzivatelRepository.save(uzivatel);

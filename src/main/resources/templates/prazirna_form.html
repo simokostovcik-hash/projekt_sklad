@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+        <html xmlns:th="http://www.thymeleaf.org">
+        <head>
+        <title>Nová pražírna</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4">Přidat novou pražírnu</h2>
+
+        <form th:action="@{/admin/prazirna/ulozit}" th:object="${prazirna}" method="post" class="card p-4 shadow-sm">
+
+            <div class="mb-3">
+                <label class="form-label">Název pražírny:</label>
+                <input type="text" th:field="*{nazev}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Země původu:</label>
+                <input type="text" th:field="*{zemePuvodu}" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Adresa / Lokalita:</label>
+                <input type="text" th:field="*{adresa}" class="form-control">
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Uložit pražírnu</button>
+                <a href="/admin/prazirny" class="btn btn-outline-secondary">Zrušit</a>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html></title>
+</head>
+<body>
+
+</body>
+</html>

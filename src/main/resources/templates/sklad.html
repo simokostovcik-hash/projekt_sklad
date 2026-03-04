@@ -1,100 +1,75 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Sklad Kávy</title>
+    <title>Sklad Kávy | Hlavní menu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-dark bg-dark mb-4 shadow">
+<nav class="navbar navbar-dark bg-dark mb-5">
     <div class="container">
-        <span class="navbar-brand">☕ Kávový Sklad</span>
-        <div class="d-flex align-items-center">
-
-            <a sec:authorize="hasRole('ADMIN')" href="/admin/uzivatele" class="btn btn-outline-warning me-3">
-                <i class="bi bi-people"></i> Správa uživatelů
-            </a>
-
-            <span class="text-light me-3 small">
-                Přihlášen: <strong sec:authentication="name">Uživatel</strong>
-                (<span sec:authentication="principal.authorities">Role</span>)
-            </span>
-
-            <form th:action="@{/logout}" method="post" class="m-0">
-                <button type="submit" class="btn btn-danger btn-sm">Odhlásit</button>
-            </form>
+        <span class="navbar-brand mb-0 h1">☕ Kávový Systém v1.0</span>
+        <div class="d-flex">
+            <span class="text-light me-3" th:text="'Uživatel: ' + ${#authentication.name}">Admin</span>
+            <a href="/logout" class="btn btn-outline-danger btn-sm">Odhlásit se</a>
         </div>
     </div>
 </nav>
 
 <div class="container">
-    <div class="row mb-4 text-center">
-        <div class="col-md-6">
-            <div class="card shadow-sm border-primary">
-                <div class="card-body">
-                    <h5 class="text-muted">Druhy kávy</h5>
-                    <h2 th:text="${pocet}">0</h2>
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h1 class="display-4 fw-bold">Vítejte v systému</h1>
+            <p class="lead text-muted">Vyberte sekci, kterou chcete spravovat.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm card-hover border-primary">
+                <div class="card-body text-center p-4">
+                    <div class="display-1 mb-3">📦</div>
+                    <h3 class="card-title">Sklad kávy</h3>
+                    <p class="card-text text-muted">Přehled zásob, přidávání nových balení a správa gramáže.</p>
+                    <a href="/kava/vse" class="btn btn-primary btn-lg w-100 mt-3">Vstoupit do skladu</a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card shadow-sm border-success">
-                <div class="card-body">
-                    <h5 class="text-muted">Celková hodnota skladu</h5>
-                    <h2 th:text="${celkem + ' Kč'}">0 Kč</h2>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm card-hover border-dark">
+                <div class="card-body text-center p-4">
+                    <div class="display-1 mb-3">🏭</div>
+                    <h3 class="card-title">Pražírny</h3>
+                    <p class="card-text text-muted">Seznam dodavatelských pražíren, lokalit a zemí původu.</p>
+                    <a href="/admin/prazirny" class="btn btn-dark btn-lg w-100 mt-3">Spravovat pražírny</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm card-hover border-secondary">
+                <div class="card-body text-center p-4">
+                    <div class="display-1 mb-3">🛡️</div>
+                    <h3 class="card-title">Admin Panel</h3>
+                    <p class="card-text text-muted">Sledování historie změn (AuditLog) a správa uživatelů.</p>
+                    <a href="/audit" class="btn btn-outline-secondary btn-lg w-100 mt-3">Zobrazit historii</a>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3>Seznam zásob</h3>
-
-        <a sec:authorize="hasRole('ADMIN')" href="/kava/pridat" class="btn btn-success">
-            <i class="bi bi-plus-circle"></i> Přidat novou kávu
-        </a>
-    </div>
-
-    <div class="card shadow">
-        <div class="table-responsive">
-            <form th:action="@{/kava/vse}" method="get" class="mb-4 d-flex gap-2">
-                <input type="text" name="hledat" class="form-control" placeholder="Hledat kávu..." th:value="${hledano}">
-                <button type="submit" class="btn btn-primary">Hledat</button>
-                <a href="/kava/vse" class="btn btn-outline-secondary">Zrušit</a>
-            </form>
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-dark">
-                <tr>
-                    <th class="ps-4">Název kávy</th>
-                    <th>Gramáž (g)</th>
-                    <th>Cena (Kč)</th>
-                    <th sec:authorize="hasRole('ADMIN')" class="text-center">Akce</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:if="${#lists.isEmpty(seznamKav)}">
-                    <td colspan="4" class="text-center py-4 text-muted">Sklad je momentálně prázdný.</td>
-                </tr>
-                <tr th:each="k : ${seznamKav}">
-                    <td class="ps-4 fw-bold" th:text="${k.nazev}">Název</td>
-                    <td th:text="${k.gramaz}">0</td>
-                    <td th:text="${k.cena}">0</td>
-
-                    <td sec:authorize="hasRole('ADMIN')" class="text-center">
-                        <a th:href="@{/kava/smazat/{id}(id=${k.id})}"
-                           class="btn btn-outline-danger btn-sm"
-                           onclick="return confirm('Opravdu smazat tuto kávu?')">
-                            <i class="bi bi-trash"></i> Smazat
-                        </a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <footer class="mt-5 py-3 text-center text-muted border-top">
+        &copy; 2026 Sklad Kávy - Semestrální projekt
+    </footer>
 </div>
 
 </body>
