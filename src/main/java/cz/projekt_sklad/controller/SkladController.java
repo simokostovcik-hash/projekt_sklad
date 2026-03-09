@@ -41,28 +41,18 @@ public class SkladController {
         return "sklad";
     }
 
-
     @GetMapping("/kava/vse")
-    public String zobrazVypisKavy(Model model, @RequestParam(required = false) String hledat) {
-        List<Kava> seznam;
-        if (hledat != null && !hledat.isEmpty()) {
-            seznam = kavaRepository.findByNazevContainingIgnoreCase(hledat);
-            model.addAttribute("hledano", hledat);
-        } else {
-            seznam = kavaRepository.findAll();
-        }
+    public String zobrazFormular(Model model) {
+        model.addAttribute("kava", new Kava());
+
+
+        List<Kava> seznam = kavaRepository.findAll();
         model.addAttribute("seznamKav", seznam);
         model.addAttribute("pocet", seznam.size());
 
         int celkem = seznam.stream().mapToInt(Kava::getCena).sum();
         model.addAttribute("celkem", celkem);
 
-        return "vypis_kavy";
-    }
-
-    @GetMapping("/kava/pridat")
-    public String zobrazFormular(Model model) {
-        model.addAttribute("kava", new Kava());
         return "formular";
     }
 
@@ -71,6 +61,7 @@ public class SkladController {
         String autor = (principal != null) ? principal.getName() : "System";
         kavaRepository.save(kava);
         auditLogRepository.save(new AuditLog(autor, "Přidána/Upravena káva: " + kava.getNazev(), LocalDateTime.now()));
+
         return "redirect:/kava/vse";
     }
 
@@ -81,20 +72,14 @@ public class SkladController {
             auditLogRepository.save(new AuditLog(autor, "Smazána káva: " + k.getNazev(), LocalDateTime.now()));
             kavaRepository.delete(k);
         });
+
         return "redirect:/kava/vse";
     }
-
 
     @GetMapping("/admin/prazirny")
     public String vypisPrazirny(Model model) {
         model.addAttribute("vsechnyPrazirny", prazirnaRepository.findAll());
         return "prazirny_seznam";
-    }
-
-    @GetMapping("/admin/prazirna/nova")
-    public String novaPrazirnaForm(Model model) {
-        model.addAttribute("prazirna", new Prazirna());
-        return "prazirna_form";
     }
 
     @PostMapping("/admin/prazirna/ulozit")
@@ -106,6 +91,7 @@ public class SkladController {
     @GetMapping("/audit")
     public String zobrazAudit(Model model) {
         model.addAttribute("auditLogy", auditLogRepository.findAll());
+        model.addAttribute("uzivatele", uzivatelRepository.findAll());
         return "admin_panel";
     }
 
@@ -145,6 +131,12 @@ public class SkladController {
         uzivatel.setPassword(passwordEncoder.encode(uzivatel.getPassword()));
         uzivatelRepository.save(uzivatel);
         return "redirect:/login?success";
+    }
+
+    @GetMapping("/admin/prazirna/nova")
+    public String novaPrazirnaForm(Model model) {
+        model.addAttribute("prazirna", new Prazirna());
+        return "prazirna_form";
     }
 
     @GetMapping("/login")

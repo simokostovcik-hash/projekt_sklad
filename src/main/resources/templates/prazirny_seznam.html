@@ -1,66 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title><!DOCTYPE html>
-        <html xmlns:th="http://www.thymeleaf.org">
-        <head>
-        <meta charset="UTF-8">
-        <title>Správa pražíren</title>
+    <title>Seznam pražíren</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="bg-light p-5">
 
-<div class="container mt-5">
-    <div class="card shadow">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Seznam pražíren</h2>
-            <a href="/admin/prazirna/nova" class="btn btn-success btn-sm">Přidat novou pražírnu</a>
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>☕ Naše partnerské pražírny</h1>
+        <div>
+            <a href="/admin/prazirna/nova" sec:authorize="hasRole('ADMIN')" class="btn btn-primary">➕ Přidat pražírnu</a>
+            <a href="/sklad" class="btn btn-secondary ms-2">🏠 Zpět do menu</a>
         </div>
-        <div class="card-body">
+    </div>
 
-            <table class="table table-hover table-striped">
-                <thead class="table-light">
+    <div class="card shadow">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
-                    <th>Název pražírny</th>
+                    <th>Název</th>
                     <th>Země původu</th>
-                    <th>Adresa / Lokalita</th>
-                    <th class="text-center">Akce</th>
+                    <th>Webová stránka</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="p : ${vsechnyPrazirny}">
-                    <td th:text="${p.id}">1</td>
-                    <td class="fw-bold" th:text="${p.nazev}">Nordbeans</td>
-                    <td th:text="${p.zemePuvodu}">Česká republika</td>
-                    <td th:text="${p.adresa}">Liberec</td>
-                    <td class="text-center">
-                        <a th:href="@{/admin/prazirna/smazat/{id}(id=${p.id})}"
-                           class="btn btn-outline-danger btn-sm"
-                           onclick="return confirm('Opravdu smazat?')">
-                            Smazat
-                        </a>
+                    <td th:text="${p.nazev}" class="fw-bold"></td>
+                    <td th:text="${p.zeme}"></td>
+                    <td>
+                        <a th:href="${p.web}" th:text="${p.web}" target="_blank"></a>
                     </td>
-                </tr>
-
-                <tr th:if="${#lists.isEmpty(vsechnyPrazirny)}">
-                    <td colspan="5" class="text-center text-muted">V databázi nejsou zatím žádné pražírny.</td>
                 </tr>
                 </tbody>
             </table>
 
-        </div>
-        <div class="card-footer text-end">
-            <a href="/kava/vse" class="btn btn-secondary">Zpět na sklad kávy</a>
+            <div th:if="${#lists.isEmpty(vsechnyPrazirny)}" class="text-center p-3 text-muted">
+                Zatím nemáme žádné pražírny v seznamu.
+            </div>
         </div>
     </div>
 </div>
-
-</body>
-</html></title>
-</head>
-<body>
 
 </body>
 </html>

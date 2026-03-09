@@ -1,37 +1,144 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Přidat kávu</title>
+    <title>Sklad Kávy | Správa</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+
 <div class="container mt-5">
-    <div class="card shadow" style="max-width: 500px; margin: auto;">
-        <div class="card-header bg-success text-white">
-            <h4 class="mb-0">Nová káva do skladu</h4>
+    <div class="row">
+
+        <div class="col-md-4" sec:authorize="hasRole('ADMIN')">
+            <div class="card shadow border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">➕ Přidat kávu</h3>
+                </div>
+                <div class="card-body">
+                    <form th:action="@{/kava/ulozit}" th:object="${kava}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Název kávy:</label>
+                            <input type="text" th:field="*{nazev}" class="form-control" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Pražírna:</label>
+                            <select th:field="*{prazirna}" class="form-select" required>
+                                <option value="">-- Vyberte pražírnu --</option>
+                                <option th:each="p : ${vsechnyPrazirny}"
+                                        th:value="${p.id}"
+                                        th:text="${p.nazev}"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Druh:</label>
+                            <input type="text" th:field="*{druh}" class="form-control" placeholder="Arabica / Robusta">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold">Množství (g):</label>
+                                <input type="number" th:field="*{mnozstvi}" class="form-control" required min="0">
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-bold">Cena (Kč):</label>
+                                <input type="number" th:field="*{cena}" class="form-control" required min="0">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Stav skladu:</label>
+                            <select th:field="*{stavSkladu}" class="form-select" id="stavSelect" onchange="toggleDatum()">
+                                <option value="Skladem">Skladem</option>
+                                <option value="Není skladem">Není skladem</option>
+                                <option value="Objednáno">Objednáno</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="datumDiv" style="display: none;">
+                            <label class="form-label fw-bold text-danger">Datum očekávaného naskladnění:</label>
+                            <input type="date" th:field="*{datumObjednavky}" class="form-control">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100 shadow-sm mt-2">Uložit do skladu</button>
+                    </form>
+                    <hr>
+                    <a href="/sklad" class="btn btn-secondary w-100 shadow-sm">🏠 Zpět do menu</a>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <form th:action="@{/kava/ulozit}" th:object="${kava}" method="post">
-                <div class="mb-3">
-                    <label class="form-label">Název kávy</label>
-                    <input type="text" th:field="*{nazev}" class="form-control" required>
+
+        <div th:class="${#authorization.expression('hasRole(''ROLE_ADMIN'')') ? 'col-md-8' : 'col-md-12'}">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">📦 Aktuální stav skladu</h3>
+                    <div>
+                        <span class="badge bg-info p-2" th:text="'Celková hodnota: ' + ${celkem} + ' Kč'"></span>
+                        <a href="/sklad" sec:authorize="!hasRole('ADMIN')" class="btn btn-sm btn-outline-light ms-2">Zpět</a>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Gramáž (g)</label>
-                    <input type="number" th:field="*{gramaz}" class="form-control" required>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Název</th>
+                                <th>Pražírna</th>
+                                <th>Druh</th>
+                                <th>Stav</th>
+                                <th>Množství</th>
+                                <th>Cena</th>
+                                <th sec:authorize="hasRole('ADMIN')" class="text-center">Akce</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="k : ${seznamKav}">
+                                <td th:text="${k.nazev}" class="fw-bold"></td>
+                                <td th:text="${k.prazirna != null ? k.prazirna.nazev : 'Neuvedeno'}"></td>
+                                <td th:text="${k.druh}"></td>
+                                <td>
+                                    <span th:text="${k.stavSkladu}"
+                                          th:classappend="${k.stavSkladu == 'Skladem' ? 'badge bg-success' : (k.stavSkladu == 'Objednáno' ? 'badge bg-warning text-dark' : 'badge bg-danger')}">
+                                    </span>
+                                    <br>
+                                    <small class="text-muted" th:if="${k.stavSkladu == 'Objednáno'}" th:text="${k.datumObjednavky}"></small>
+                                </td>
+                                <td th:text="${k.mnozstvi} + ' g'"></td>
+                                <td th:text="${k.cena} + ' Kč'"></td>
+                                <td sec:authorize="hasRole('ADMIN')" class="text-center">
+                                    <a th:href="@{/kava/smazat/{id}(id=${k.id})}"
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('Opravdu smazat?')">🗑️ Smazat</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div th:if="${#lists.isEmpty(seznamKav)}" class="text-center p-4 text-muted">
+                        Sklad je momentálně prázdný.
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label">Cena (Kč)</label>
-                    <input type="number" th:field="*{cena}" class="form-control" required>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <a href="/kava/vse" class="btn btn-secondary">Zpět</a>
-                    <button type="submit" class="btn btn-success">Uložit kávu</button>
-                </div>
-            </form>
+            </div>
         </div>
+
     </div>
 </div>
+
+<script>
+    function toggleDatum() {
+        const select = document.getElementById('stavSelect');
+        const div = document.getElementById('datumDiv');
+        if (select.value === 'Objednáno') {
+            div.style.display = 'block';
+        } else {
+            div.style.display = 'none';
+        }
+    }
+    window.onload = toggleDatum;
+</script>
+
 </body>
 </html>

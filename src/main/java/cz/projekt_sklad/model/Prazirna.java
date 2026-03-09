@@ -1,6 +1,7 @@
 package cz.projekt_sklad.model;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,57 +17,36 @@ public class Prazirna {
 
     private String adresa;
 
-    private String zemePuvodu;
+    private String zeme;
 
-    @OneToMany(mappedBy = "prazirna", cascade = CascadeType.ALL)
-    private List<Kava> seznamKav;
+    private String web;
 
-    public Prazirna() {
-    }
+    @OneToMany(mappedBy = "prazirna", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Kava> seznamKav = new ArrayList<>();
 
-    public Prazirna(String nazev, String adresa, String zemePuvodu) {
+    public Prazirna() {}
+
+    public Prazirna(String nazev, String adresa, String zeme) {
         this.nazev = nazev;
         this.adresa = adresa;
-        this.zemePuvodu = zemePuvodu;
+        this.zeme = zeme;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getNazev() { return nazev; }
+    public void setNazev(String nazev) { this.nazev = nazev; }
 
-    public String getNazev() {
-        return nazev;
-    }
+    public String getAdresa() { return adresa; }
+    public void setAdresa(String adresa) { this.adresa = adresa; }
 
-    public void setNazev(String nazev) {
-        this.nazev = nazev;
-    }
+    public String getZeme() { return zeme; }
+    public void setZeme(String zeme) { this.zeme = zeme; }
 
-    public String getAdresa() {
-        return adresa;
-    }
+    public String getWeb() { return web; }
+    public void setWeb(String web) { this.web = web; }
 
-    public void setAdresa(String adresa) {
-        this.adresa = adresa;
-    }
-
-    public String getZemePuvodu() {
-        return zemePuvodu;
-    }
-
-    public void setZemePuvodu(String zemePuvodu) {
-        this.zemePuvodu = zemePuvodu;
-    }
-
-    public List<Kava> getSeznamKav() {
-        return seznamKav;
-    }
-
-    public void setSeznamKav(List<Kava> seznamKav) {
-        this.seznamKav = seznamKav;
-    }
+    public List<Kava> getSeznamKav() { return seznamKav; }
+    public void setSeznamKav(List<Kava> seznamKav) { this.seznamKav = seznamKav; }
 }

@@ -15,11 +15,17 @@ public class Kava {
 
     private String druh;
 
-    private int cena;
+    @Column(nullable = false)
+    private int cena = 0;
 
-    private int mnozstvi;
+    @Column(nullable = false)
+    private int mnozstvi = 0;
 
-    @ManyToOne
+    private String stavSkladu;
+
+    private String datumObjednavky;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "prazirna_id")
     private Prazirna prazirna;
 
@@ -34,51 +40,22 @@ public class Kava {
         this.prazirna = prazirna;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public String getNazev() {
-        return nazev;
-    }
-
-    public void setNazev(String nazev) {
-        this.nazev = nazev;
-    }
-
-    public String getDruh() {
-        return druh;
-    }
-
-    public void setDruh(String druh) {
-        this.druh = druh;
-    }
-
-    public int getCena() {
-        return cena;
-    }
-
-    public void setCena(int cena) {
-        this.cena = cena;
-    }
-
-    public int getMnozstvi() {
-        return mnozstvi;
-    }
-
-    public void setMnozstvi(int mnozstvi) {
-        this.mnozstvi = mnozstvi;
-    }
-
-    public Prazirna getPrazirna() {
-        return prazirna;
-    }
-
-    public void setPrazirna(Prazirna prazirna) {
-        this.prazirna = prazirna;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getNazev() { return nazev; }
+    public void setNazev(String nazev) { this.nazev = nazev; }
+    public String getDruh() { return druh; }
+    public void setDruh(String druh) { this.druh = druh; }
+    public int getCena() { return cena; }
+    public void setCena(int cena) { this.cena = cena; }
+    public int getMnozstvi() { return mnozstvi; }
+    public void setMnozstvi(int mnozstvi) { this.mnozstvi = mnozstvi; }
+    public Prazirna getPrazirna() { return prazirna; }
+    public void setPrazirna(Prazirna prazirna) { this.prazirna = prazirna; }
+    public String getStavSkladu() { return stavSkladu; }
+    public void setStavSkladu(String stavSkladu) { this.stavSkladu = stavSkladu; }
+    public String getDatumObjednavky() { return datumObjednavky; }
+    public void setDatumObjednavky(String datumObjednavky) { this.datumObjednavky = datumObjednavky; }
 }
