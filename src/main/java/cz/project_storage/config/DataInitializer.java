@@ -27,4 +27,6 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("Default admin user has been initialized.");
         }
     }
+
+
 }

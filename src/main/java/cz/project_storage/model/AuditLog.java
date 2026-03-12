@@ -11,30 +11,30 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String uzivatel;
-    private String akce;
+    private String user;      // Přejmenováno z uzivatel
+    private String action;    // Přejmenováno z akce
 
-    @Column(name = "cas")
-    private LocalDateTime cas;
+    @Column(name = "cas")     // V databázi sloupec zůstane "cas", pokud tam už máš data
+    private LocalDateTime timestamp; // Přejmenováno z cas
 
     public AuditLog() {
     }
 
-    public AuditLog(String uzivatel, String akce, LocalDateTime cas) {
-        this.uzivatel = uzivatel;
-        this.akce = akce;
-        this.cas = cas;
+    public AuditLog(String user, String action, LocalDateTime timestamp) {
+        this.user = user;
+        this.action = action;
+        this.timestamp = timestamp;
     }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getUzivatel() { return uzivatel; }
-    public void setUzivatel(String uzivatel) { this.uzivatel = uzivatel; }
+    public String getUser() { return user; }
+    public void setUser(String user) { this.user = user; }
 
-    public String getAkce() { return akce; }
-    public void setAkce(String akce) { this.akce = akce; }
+    public String getAction() { return action; }
+    public void setAction(String action) { this.action = action; }
 
-    public LocalDateTime getCas() { return cas; }
-    public void setCas(LocalDateTime cas) { this.cas = cas; }
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
 }

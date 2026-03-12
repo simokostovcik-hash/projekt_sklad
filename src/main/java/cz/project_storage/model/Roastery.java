@@ -18,51 +18,33 @@ public class Roastery {
     @OneToMany(mappedBy = "roastery", cascade = CascadeType.ALL)
     private List<Coffee> coffees;
 
-    public Long getId() {
-        return id;
+    public Roastery() {
     }
 
-    public void setId(Long id) {
+    public Roastery(Long id, String name, String country, String address, String website) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
         this.name = name;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
         this.country = country;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
         this.website = website;
     }
 
-    public List<Coffee> getCoffees() {
-        return coffees;
-    }
 
-    public void setCoffees(List<Coffee> coffees) {
-        this.coffees = coffees;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getWebsite() { return website; }
+    public void setWebsite(String website) { this.website = website; }
+
+    public List<Coffee> getCoffees() { return coffees; }
+    public void setCoffees(List<Coffee> coffees) { this.coffees = coffees; }
 }

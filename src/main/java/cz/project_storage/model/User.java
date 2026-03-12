@@ -3,6 +3,7 @@ package cz.project_storage.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "users")
 public class User {
 
     @Id
@@ -12,6 +13,16 @@ public class User {
     private String username;
     private String password;
     private String role;
+
+    public User() {
+    }
+
+    public User(Long id, String username, String password, String role) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
     public Long getId() {
         return id;
