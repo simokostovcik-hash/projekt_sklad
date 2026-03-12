@@ -29,3 +29,27 @@ src/main/java/cz/project_storage/
 ├── repository/    # Data Access Layer
 ├── service/       # Business Logic Layer
 └── security/      # Security Configuration
+```
+
+Getting Started
+Prerequisites
+JDK 23 (or compatible version 21+)
+
+Maven
+
+Installation and Execution
+Clone the repository:
+git clone [https://github.com/simokostovcik-hash/projekt_sklad.git](https://github.com/simokostovcik-hash/projekt_sklad.git)
+
+Build and run the application:
+mvn spring-boot:run
+
+Access the application at: http://localhost:8080
+Role      Username   Password
+Admin     admin      admin123
+User      user       user123
+
+Data Generation
+To populate the database with sample data for testing purposes, log in as an Admin and navigate to the Generate link. This executes the generation logic within the StorageController, which parses predefined entries from the data.json resource into the H2 database.
+
+Created as a professional storage management solution.
