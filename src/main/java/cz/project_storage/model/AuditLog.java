@@ -1,4 +1,4 @@
-package cz.projekt_sklad.model;
+package cz.project_storage.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

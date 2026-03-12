@@ -1,4 +1,4 @@
-package cz.projekt_sklad.config;
+package cz.project_storage.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,14 +21,14 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/admin/prazirny").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/admin/roasteries").hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/kava/smazat/**").hasRole("ADMIN")
+                        .requestMatchers("/coffee/delete/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/sklad", true)
+                        .defaultSuccessUrl("/menu", true)
                         .permitAll()
                 )
                 .logout(logout -> logout

@@ -1,4 +1,4 @@
-package cz.projekt_sklad;
+package cz.project_storage;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

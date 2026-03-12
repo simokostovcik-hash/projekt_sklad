@@ -1,9 +1,9 @@
-package cz.projekt_sklad.repository;
+package cz.project_storage.repository;
 
-import cz.projekt_sklad.model.AuditLog;
+import cz.project_storage.model.AuditLog;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
-    List<AuditLog> findAllByOrderByCasDesc();
+    List<AuditLog> findAllByOrderByTimestampDesc();
 }

@@ -1,7 +1,7 @@
-package cz.projekt_sklad.config;
+package cz.project_storage.config;
 
-import cz.projekt_sklad.model.Uzivatel;
-import cz.projekt_sklad.repository.UzivatelRepository;
+import cz.project_storage.model.User;
+import cz.project_storage.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,19 +11,20 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements CommandLineRunner {
 
     @Autowired
-    private UzivatelRepository uzivatelRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
-        if (uzivatelRepository.findByUsername("admin").isEmpty()) {
-            Uzivatel admin = new Uzivatel();
+        if (userRepository.findByUsername("admin").isEmpty()) {
+            User admin = new User();
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRole("ROLE_ADMIN");
-            uzivatelRepository.save(admin);
+            userRepository.save(admin);
+            System.out.println("Default admin user has been initialized.");
         }
     }
 }
