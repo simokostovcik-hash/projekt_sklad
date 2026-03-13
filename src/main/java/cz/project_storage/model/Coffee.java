@@ -2,6 +2,10 @@ package cz.project_storage.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Coffee {
@@ -10,13 +14,25 @@ public class Coffee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Coffee name is required")
+    @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String name;
+
     private String type;
+
+    @NotNull(message = "Quantity is required")
+    @Min(value = 0, message = "Stock quantity cannot be negative")
     private int quantity;
+
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price cannot be negative")
     private int price;
+
     private String stockStatus;
+
     private LocalDate orderDate;
 
+    @NotNull(message = "Please select a roastery")
     @ManyToOne
     @JoinColumn(name = "roastery_id")
     private Roastery roastery;
@@ -35,7 +51,7 @@ public class Coffee {
         this.orderDate = orderDate;
     }
 
-
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

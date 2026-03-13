@@ -20,10 +20,16 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/admin/roasteries").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/login", "/register", "/css/**", "/js/**", "/h2-console/**").permitAll()
+
+                        .requestMatchers("/menu", "/coffee/all", "/admin/roasteries").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/orders/all", "/orders/sell/**").hasAnyRole("USER", "ADMIN")
+
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/coffee/delete/**").hasRole("ADMIN")
+                        .requestMatchers("/coffee/delete/**", "/coffee/edit/**", "/coffee/add/**").hasRole("ADMIN")
+                        .requestMatchers("/coffee/generate").hasRole("ADMIN")
+
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form

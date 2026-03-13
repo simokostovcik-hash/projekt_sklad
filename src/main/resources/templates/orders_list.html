@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>My Orders | Coffee Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container { max-width: 1000px; }
+        .card { border: none; border-radius: 10px; overflow: hidden; }
+        .card-header h3 { font-size: 1.25rem; font-weight: 600; }
+        .table-sm-text { font-size: 0.9rem; }
+        .badge-status {
+            font-size: 0.7rem;
+            padding: 0.5em 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 20px;
+        }
+        .empty-state { padding: 4rem 0; }
+        .back-btn { transition: transform 0.2s; }
+        .back-btn:hover { transform: translateX(-3px); }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-11">
+
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <span class="fs-4 me-2">📑</span>
+                        <h3 class="mb-0">My Order History</h3>
+                    </div>
+                    <a th:href="@{/coffee/all}" class="btn btn-outline-info btn-sm back-btn">
+                        ← Back to Inventory
+                    </a>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 table-sm-text">
+                            <thead class="table-light text-secondary text-uppercase small">
+                            <tr>
+                                <th class="ps-4 py-3">Order ID</th>
+                                <th class="py-3">Items Purchased</th>
+                                <th class="py-3">Total Amount</th>
+                                <th class="py-3">Status</th>
+                                <th class="py-3 pe-4">Date & Time</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="o : ${orders}">
+                                <td class="ps-4 text-muted font-monospace" th:text="'#' + ${o.id}"></td>
+
+                                <td>
+                                    <div th:each="item : ${o.items}">
+                                        <span class="fw-bold text-dark"
+                                              th:text="${item.coffee != null ? item.coffee.name : 'Unknown Coffee'}"></span>
+                                        <span class="text-muted small" th:text="' (' + ${item.quantity} + 'x)'"></span>
+                                    </div>
+                                    <div th:if="${o.items == null or #lists.isEmpty(o.items)}" class="text-muted fst-italic small">
+                                        No items details found
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="fw-bold text-primary"
+                                          th:text="${o.totalPrice != null ? o.totalPrice : '0'} + ' CZK'"></span>
+                                </td>
+
+                                <td>
+                                    <span th:text="${o.status}"
+                                          th:classappend="${o.status == 'COMPLETED' ? 'bg-success text-white' : 'bg-warning text-dark'}"
+                                          class="badge badge-status">
+                                    </span>
+                                </td>
+
+                                <td class="pe-4 text-muted">
+                                    <span th:text="${o.orderDate != null ? #temporals.format(o.orderDate, 'yyyy-MM-dd HH:mm') : 'N/A'}"></span>
+                                </td>
+                            </tr>
+
+                            <tr th:if="${orders == null or #lists.isEmpty(orders)}">
+                                <td colspan="5" class="text-center empty-state">
+                                    <div class="text-muted">
+                                        <span class="display-4 d-block mb-3">🛒</span>
+                                        <p class="mb-0">You haven't placed any orders yet.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center">
+                    <a th:href="@{/menu}" class="btn btn-secondary btn-sm shadow-sm px-3">
+                        🏠 Main Menu
+                    </a>
+                    <div class="text-muted small" sec:authorize="isAuthenticated()">
+                        Authenticated as: <span class="fw-bold text-dark" th:text="${#authentication.name}">User</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

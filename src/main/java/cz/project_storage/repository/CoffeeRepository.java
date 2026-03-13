@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface CoffeeRepository extends JpaRepository<Coffee, Long> {
     List<Coffee> findByNameContainingIgnoreCase(String name);
+
 }

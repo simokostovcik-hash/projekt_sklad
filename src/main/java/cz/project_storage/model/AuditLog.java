@@ -11,11 +11,11 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String user;      // Přejmenováno z uzivatel
-    private String action;    // Přejmenováno z akce
+    private String user;
+    private String action;
 
-    @Column(name = "cas")     // V databázi sloupec zůstane "cas", pokud tam už máš data
-    private LocalDateTime timestamp; // Přejmenováno z cas
+    @Column(name = "cas")
+    private LocalDateTime timestamp;
 
     public AuditLog() {
     }
