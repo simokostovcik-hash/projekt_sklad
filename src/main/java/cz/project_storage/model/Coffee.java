@@ -2,6 +2,8 @@ package cz.project_storage.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,6 +39,14 @@ public class Coffee {
     @JoinColumn(name = "roastery_id")
     private Roastery roastery;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "coffee_tags",
+            joinColumns = @JoinColumn(name = "coffee_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
+
     public Coffee() {
     }
 
@@ -51,7 +61,6 @@ public class Coffee {
         this.orderDate = orderDate;
     }
 
-    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -75,4 +84,7 @@ public class Coffee {
 
     public Roastery getRoastery() { return roastery; }
     public void setRoastery(Roastery roastery) { this.roastery = roastery; }
+
+    public Set<Tag> getTags() { return tags; }
+    public void setTags(Set<Tag> tags) { this.tags = tags; }
 }
