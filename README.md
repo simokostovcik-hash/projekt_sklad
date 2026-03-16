@@ -48,6 +48,4 @@ Access the application at: http://localhost:8080
 (role_admin) Login: admin / Password: admin123
 
 Data Generation
-To populate the database with sample data for testing purposes, log in as an Admin and navigate to the Generate link. This executes the generation logic within the StorageController, which parses predefined entries from the data.json resource into the H2 database.
-
-Created as a professional storage management solution.
+To populate the database with sample data for testing purposes, log in as an Admin and navigate to the Generate link (http://localhost:8080/test/generate-data). This executes the generation logic within the StorageController, which parses predefined entries from the data.json resource into the H2 database.
