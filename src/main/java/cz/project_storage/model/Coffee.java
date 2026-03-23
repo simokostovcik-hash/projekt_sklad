@@ -28,7 +28,7 @@ public class Coffee {
 
     @NotNull(message = "Price is required")
     @Min(value = 0, message = "Price cannot be negative")
-    private int price;
+    private double price;
 
     private String stockStatus;
 
@@ -50,7 +50,7 @@ public class Coffee {
     public Coffee() {
     }
 
-    public Coffee(Long id, String name, Roastery roastery, String type, int quantity, int price, String stockStatus, LocalDate orderDate) {
+    public Coffee(Long id, String name, Roastery roastery, String type, int quantity, double price, String stockStatus, LocalDate orderDate) {
         this.id = id;
         this.name = name;
         this.roastery = roastery;
@@ -73,8 +73,8 @@ public class Coffee {
     public int getQuantity() { return quantity; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
-    public int getPrice() { return price; }
-    public void setPrice(int price) { this.price = price; }
+    public double getPrice() { return price; }
+    public void setPrice(double price) { this.price = price; }
 
     public String getStockStatus() { return stockStatus; }
     public void setStockStatus(String stockStatus) { this.stockStatus = stockStatus; }

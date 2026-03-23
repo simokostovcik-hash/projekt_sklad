@@ -36,12 +36,17 @@ public class OrderService {
         }
         coffeeRepository.save(coffee);
 
+
         Order order = new Order();
         order.setUser(user);
-        order.setTotalPrice((double) (coffee.getPrice() * quantity));
+
+
+        double totalPrice = coffee.getPrice() * quantity;
+        order.setTotalPrice(totalPrice);
         order.setStatus("COMPLETED");
 
-        OrderItem item = new OrderItem(order, coffee, quantity, coffee.getPrice());
+
+        OrderItem item = new OrderItem(order, coffee, quantity, (int) coffee.getPrice());
         order.getItems().add(item);
 
         orderRepository.save(order);
@@ -51,4 +56,6 @@ public class OrderService {
         User user = userRepository.findByUsername(username).orElse(null);
         return orderRepository.findByUser(user);
     }
+
+
 }
