@@ -51,4 +51,15 @@ public class InvoiceService {
 
         document.close();
     }
+    public void exportOrder(Order order, HttpServletResponse response) throws IOException {
+        Document document = new Document(PageSize.A4);
+        PdfWriter.getInstance(document, response.getOutputStream());
+        document.open();
+
+        document.add(new Paragraph("Invoice ID: " + order.getId()));
+        document.add(new Paragraph("Data: " + order.getOrderDate()));
+        document.add(new Paragraph("Total price: " + order.getTotalPrice() + " CZK"));
+
+        document.close();
+    }
 }

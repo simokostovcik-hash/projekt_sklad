@@ -11,7 +11,9 @@ public class AuditLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "app_user")
     private String user;
+
     private String action;
 
     @Column(name = "cas")

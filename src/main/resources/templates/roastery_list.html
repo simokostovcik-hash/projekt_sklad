@@ -12,7 +12,6 @@
         .filter-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; }
         .sort-btn { cursor: pointer; border: none; background: none; padding: 0 5px; color: #adb5bd; transition: color 0.2s; }
         .sort-btn:hover { color: #0d6efd; }
-        .sort-btn.active { color: #212529; font-weight: bold; }
         th { white-space: nowrap; }
     </style>
 </head>
@@ -20,46 +19,45 @@
 
 <div class="container-fluid mt-5">
     <div class="row">
-
         <div class="col-md-3">
-            <div class="card shadow border-0 mb-4" sec:authorize="hasRole('ADMIN')">
+            <div class="card shadow border-0 mb-4" sec:authorize="hasRole('ADMIN')" th:if="${roastery != null}">
                 <div class="card-header bg-primary text-white p-3">
                     <h3 class="mb-0" th:text="${roastery.id == null ? '➕ Add Roastery' : '✏️ Edit Roastery'}"></h3>
                 </div>
                 <div class="card-body p-3">
-                    <form th:action="@{/admin/roastery/save}" th:object="${roastery}" method="post">
+                    <form th:action="@{/roastery/save}" th:object="${roastery}" method="post">
                         <input type="hidden" th:field="*{id}">
                         <div class="mb-2">
                             <label class="form-label small fw-bold">Roastery Name:</label>
-                            <input type="text" th:field="*{name}" class="form-control form-control-sm" placeholder="e.g. Doubleshot" required>
+                            <input type="text" th:field="*{name}" class="form-control form-control-sm" required>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small fw-bold">Country:</label>
-                            <input type="text" th:field="*{country}" class="form-control form-control-sm" placeholder="e.g. Czech Republic" required>
+                            <input type="text" th:field="*{country}" class="form-control form-control-sm" required>
                         </div>
                         <div class="mb-2">
                             <label class="form-label small fw-bold">Address:</label>
-                            <input type="text" th:field="*{address}" class="form-control form-control-sm" placeholder="e.g. Prague">
+                            <input type="text" th:field="*{address}" class="form-control form-control-sm">
                         </div>
                         <div class="mb-3">
                             <label class="form-label small fw-bold">Website:</label>
-                            <input type="url" th:field="*{website}" class="form-control form-control-sm" placeholder="https://...">
+                            <input type="url" th:field="*{website}" class="form-control form-control-sm">
                         </div>
                         <button type="submit"
-                                th:class="${roastery.id == null ? 'btn btn-success btn-sm w-100 shadow-sm' : 'btn btn-warning btn-sm w-100 shadow-sm'}"
+                                th:class="${roastery.id == null ? 'btn btn-success btn-sm w-100' : 'btn btn-warning btn-sm w-100'}"
                                 th:text="${roastery.id == null ? 'Save Roastery' : 'Update Roastery'}"></button>
-                        <a th:if="${roastery.id != null}" href="/admin/roasteries" class="btn btn-link btn-sm w-100 mt-1 text-decoration-none text-muted">Cancel Edit</a>
+                        <a th:if="${roastery.id != null}" th:href="@{/roasteries}" class="btn btn-link btn-sm w-100 mt-1 text-muted">Cancel Edit</a>
                     </form>
                 </div>
             </div>
 
             <div class="mt-3">
-                <a href="/coffee/all" class="btn btn-outline-primary btn-sm w-100 mb-2 shadow-sm">📦 Manage Inventory</a>
-                <a href="/menu" class="btn btn-secondary btn-sm w-100 shadow-sm">🏠 Main Menu</a>
+                <a th:href="@{/coffee/all}" class="btn btn-outline-primary btn-sm w-100 mb-2">📦 Manage Inventory</a>
+                <a th:href="@{/menu}" class="btn btn-secondary btn-sm w-100">🏠 Main Menu</a>
             </div>
         </div>
 
-        <div th:class="${#authorization.expression('hasRole(''ADMIN'')') ? 'col-md-6' : 'col-md-6'}">
+        <div class="col-md-6">
             <div class="card shadow border-0">
                 <div class="card-header bg-dark text-white p-3">
                     <h3 class="mb-0">🏬 Our Partner Roasteries</h3>
@@ -77,20 +75,23 @@
                             </tr>
                             </thead>
                             <tbody id="roasteryTableBody">
-                            <tr th:each="r : ${allRoasteries}" class="roastery-row">
+                            <tr th:each="r : ${roasteries}" class="roastery-row">
                                 <td th:text="${r.name}" class="fw-bold ps-3 col-name"></td>
                                 <td th:text="${r.country}" class="col-country"></td>
-                                <td th:text="${r.address != null ? r.address : '---'}" class="col-address text-muted"></td>
-                                <td class="col-website">
-                                    <a th:if="${r.website != null and !r.website.empty}" th:href="${r.website}" target="_blank" class="text-primary fw-bold text-decoration-none">🌐</a>
-                                    <span th:unless="${r.website != null and !r.website.empty}" class="text-muted">---</span>
+                                <td th:text="${r.address != null and r.address != '' ? r.address : '---'}" class="col-address text-muted"></td>
+                                <td class="col-website text-center">
+                                    <a th:if="${r.website != null and !#strings.isEmpty(r.website)}" th:href="${r.website}" target="_blank">🌐</a>
+                                    <span th:unless="${r.website != null and !#strings.isEmpty(r.website)}" class="text-muted">---</span>
                                 </td>
                                 <td sec:authorize="hasRole('ADMIN')" class="text-center">
                                     <div class="btn-group">
-                                        <a th:href="@{/admin/roastery/edit/{id}(id=${r.id})}" class="btn btn-sm btn-light">✏️</a>
-                                        <a th:href="@{/admin/roastery/delete/{id}(id=${r.id})}" class="btn btn-sm btn-light text-danger" onclick="return confirm('Delete this roastery?')">🗑️</a>
+                                        <a th:href="@{/roastery/edit/{id}(id=${r.id})}" class="btn btn-sm btn-light">✏️</a>
+                                        <a th:href="@{/roastery/delete/{id}(id=${r.id})}" class="btn btn-sm btn-light text-danger" onclick="return confirm('Delete?')">🗑️</a>
                                     </div>
                                 </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(roasteries)}">
+                                <td colspan="5" class="text-center py-4 text-muted">No roasteries found.</td>
                             </tr>
                             </tbody>
                         </table>
@@ -100,35 +101,6 @@
         </div>
 
         <div class="col-md-3">
-            <div class="card shadow border-0">
-                <div class="card-header bg-secondary text-white p-3">
-                    <h3 class="mb-0">🔍 Filters</h3>
-                </div>
-                <div class="card-body p-3">
-                    <div class="mb-3">
-                        <label class="filter-label d-block mb-1">Roastery Name</label>
-                        <input type="text" id="filterName" class="form-control form-control-sm" placeholder="Search name..." onkeyup="runRoasteryFilters()">
-                    </div>
-                    <div class="mb-3">
-                        <label class="filter-label d-block mb-1">Country</label>
-                        <input type="text" id="filterCountry" class="form-control form-control-sm" placeholder="e.g. Czechia" onkeyup="runRoasteryFilters()">
-                    </div>
-                    <div class="mb-3">
-                        <label class="filter-label d-block mb-1">Address / City</label>
-                        <input type="text" id="filterAddress" class="form-control form-control-sm" placeholder="Search location..." onkeyup="runRoasteryFilters()">
-                    </div>
-                    <div class="mb-3">
-                        <label class="filter-label d-block mb-1">Has Website?</label>
-                        <select id="filterHasWeb" class="form-select form-select-sm" onchange="runRoasteryFilters()">
-                            <option value="all">Show All</option>
-                            <option value="yes">Yes (with Link)</option>
-                            <option value="no">No (without Link)</option>
-                        </select>
-                    </div>
-                    <hr>
-                    <button class="btn btn-sm btn-outline-danger w-100" onclick="resetRoasteryFilters()">Reset All Filters</button>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -191,15 +163,6 @@
         });
 
         rows.forEach(row => tableBody.appendChild(row));
-
-        document.querySelectorAll('.sort-btn').forEach((btn, idx) => {
-            btn.innerHTML = '↕';
-            btn.classList.remove('active');
-            if (idx === columnIndex) {
-                btn.innerHTML = sortOrder === 1 ? '↑' : '↓';
-                btn.classList.add('active');
-            }
-        });
     }
 </script>
 
