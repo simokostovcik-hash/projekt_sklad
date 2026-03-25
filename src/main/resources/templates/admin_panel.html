@@ -16,6 +16,7 @@
     <h1 class="h3">System Administration</h1>
     <div class="btn-group shadow-sm">
       <a th:href="@{/coffee/all}" class="btn btn-primary">Inventory</a>
+      <a th:href="@{/roasteries}" class="btn btn-info">Roasteries</a>
       <a th:href="@{/menu}" class="btn btn-outline-secondary">Main Menu</a>
     </div>
   </div>
@@ -39,9 +40,9 @@
             <tr th:each="u : ${users}">
               <td class="ps-3 fw-bold" th:text="${u.username}"></td>
               <td>
-                <span class="badge"
-                      th:classappend="${u.role == 'ROLE_ADMIN' ? 'bg-danger' : 'bg-info text-dark'}"
-                      th:text="${u.role}"></span>
+                                <span class="badge"
+                                      th:classappend="${u.role == 'ROLE_ADMIN' ? 'bg-danger' : 'bg-info text-dark'}"
+                                      th:text="${u.role}"></span>
               </td>
               <td class="text-end pe-3">
                 <form th:action="@{/admin/user/update-role}" method="post" class="d-flex justify-content-end gap-1">

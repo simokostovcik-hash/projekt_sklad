@@ -20,8 +20,6 @@
         .back-btn { transition: transform 0.2s; }
         .back-btn:hover { transform: translateX(-3px); }
         .btn-action { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
-        .delete-icon { cursor: pointer; color: #dc3545; transition: opacity 0.2s; }
-        .delete-icon:hover { opacity: 0.7; }
     </style>
 </head>
 <body class="bg-light">
@@ -34,12 +32,9 @@
                 <div class="card-header bg-dark text-white p-3 d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
                         <span class="fs-4 me-2">📑</span>
-                        <h3 class="mb-0">My Order History</h3>
+                        <h3 class="mb-0">Order History</h3>
                     </div>
                     <div>
-                        <a th:href="@{/orders/invoice/test}" class="btn btn-danger btn-sm shadow-sm me-2">
-                            📄 Generate Test PDF
-                        </a>
                         <a th:href="@{/coffee/all}" class="btn btn-outline-info btn-sm back-btn">
                             ← Back to Inventory
                         </a>
@@ -52,6 +47,7 @@
                             <thead class="table-light text-secondary text-uppercase small">
                             <tr>
                                 <th class="ps-4 py-3">Order ID</th>
+                                <th class="py-3" sec:authorize="hasRole('ADMIN')">Customer</th>
                                 <th class="py-3">Items Purchased</th>
                                 <th class="py-3">Total Amount</th>
                                 <th class="py-3">Status</th>
@@ -63,6 +59,10 @@
                             <tbody>
                             <tr th:each="o : ${orders}">
                                 <td class="ps-4 text-muted font-monospace" th:text="'#' + ${o.id}"></td>
+
+                                <td sec:authorize="hasRole('ADMIN')">
+                                    <span class="badge bg-info text-dark" th:text="${o.user != null ? o.user.username : 'Unknown'}"></span>
+                                </td>
 
                                 <td>
                                     <div th:each="item : ${o.items}">
@@ -100,17 +100,17 @@
                                 <td class="pe-4 text-center">
                                     <a th:href="@{/orders/delete/{id}(id=${o.id})}"
                                        class="text-danger decoration-none"
-                                       onclick="return confirm('Opravdu chcete tuto objednávku odstranit?')">
+                                       onclick="return confirm('Are you sure you want to delete this order?')">
                                         <span title="Delete Order" style="font-size: 1.2rem;">🗑️</span>
                                     </a>
                                 </td>
                             </tr>
 
                             <tr th:if="${orders == null or #lists.isEmpty(orders)}">
-                                <td colspan="7" class="text-center empty-state">
+                                <td th:colspan="${#authorization.expression('hasRole(''ADMIN'')') ? 8 : 7}" class="text-center empty-state">
                                     <div class="text-muted">
                                         <span class="display-4 d-block mb-3">🛒</span>
-                                        <p class="mb-0">You haven't placed any orders yet.</p>
+                                        <p class="mb-0">No orders found.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -124,7 +124,8 @@
                         🏠 Main Menu
                     </a>
                     <div class="text-muted small" sec:authorize="isAuthenticated()">
-                        Authenticated as: <span class="fw-bold text-dark" th:text="${#authentication.name}">User</span>
+                        Logged in as: <span class="fw-bold text-dark" th:text="${#authentication.name}">User</span>
+                        <span th:if="${#authorization.expression('hasRole(''ADMIN'')')}" class="badge bg-danger ms-1">ADMIN</span>
                     </div>
                 </div>
             </div>

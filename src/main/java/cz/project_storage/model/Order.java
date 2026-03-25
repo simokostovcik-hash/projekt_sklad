@@ -17,7 +17,7 @@ public class Order {
     private String status;
     private Double totalPrice;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -45,15 +45,13 @@ public class Order {
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
-    public List<OrderItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<OrderItem> items) {
-        this.items = items;
-    }
+    public List<OrderItem> getItems() { return items; }
+    public void setItems(List<OrderItem> items) { this.items = items; }
 
     public void addOrderItem(OrderItem item) {
+        if (items == null) {
+            items = new ArrayList<>();
+        }
         items.add(item);
         item.setOrder(this);
     }

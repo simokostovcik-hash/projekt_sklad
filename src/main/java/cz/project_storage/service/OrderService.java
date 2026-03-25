@@ -54,7 +54,7 @@ public class OrderService {
 
     public List<Order> getOrdersByUsername(String username) {
         User user = userRepository.findByUsername(username).orElse(null);
-        return orderRepository.findByUser(user);
+        return orderRepository.findByUserUsername(username);
     }
 
 
