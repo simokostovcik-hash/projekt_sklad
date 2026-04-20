@@ -47,13 +47,11 @@ public class StorageController {
     @PostConstruct
     public void initData() {
         if (roasteryRepository.count() == 0) {
-            List<String> defaultRoasteries = Arrays.asList(
-                    "DoubleShot", "Nordbeans", "The Barn",
-                    "Father's Coffee Roastery", "Mazlab", "Rebelbean"
-            );
+            List<String> defaultRoasteries = Arrays.asList("DoubleShot", "Nordbeans", "The Barn");
             for (String name : defaultRoasteries) {
                 Roastery r = new Roastery();
                 r.setName(name);
+                r.setCountry("Czech Republic");
                 roasteryRepository.save(r);
             }
         }
@@ -96,25 +94,33 @@ public class StorageController {
         return "redirect:/coffee/all";
     }
 
+    @GetMapping("/coffee/edit/{id}")
+    public String editCoffee(@PathVariable Long id, Model model) {
+        coffeeRepository.findById(id).ifPresent(c -> model.addAttribute("coffee", c));
+        prepareInventoryModel(model);
+        return "coffee_list";
+    }
+
+    @GetMapping("/coffee/delete/{id}")
+    public String deleteCoffee(@PathVariable Long id, Principal principal) {
+        coffeeRepository.findById(id).ifPresent(c -> {
+            coffeeRepository.delete(c);
+            auditLogRepository.save(new AuditLog(principal.getName(), "Deleted coffee: " + c.getName(), LocalDateTime.now()));
+        });
+        return "redirect:/coffee/all";
+    }
+
     @GetMapping("/orders/all")
     public String showMyOrders(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
-
         String username = principal.getName();
-        System.out.println("DEBUG: Přihlášený uživatel: " + username);
-
         User currentUser = userRepository.findByUsername(username).orElse(null);
         List<Order> orders;
-
         if (currentUser != null && "ROLE_ADMIN".equals(currentUser.getRole())) {
-            System.out.println("DEBUG: Uživatel je ADMIN, načítám vše.");
             orders = orderRepository.findAll();
         } else {
-            System.out.println("DEBUG: Uživatel je USER, filtruji objednávky.");
             orders = orderRepository.findByUserUsername(username);
         }
-
-        System.out.println("DEBUG: Počet nalezených objednávek: " + orders.size());
         model.addAttribute("orders", orders);
         return "orders_list";
     }
@@ -124,25 +130,20 @@ public class StorageController {
         if (principal == null) return "redirect:/login";
         String username = principal.getName();
         User currentUser = userRepository.findByUsername(username).orElseThrow();
-
         coffeeRepository.findById(id).ifPresent(coffee -> {
             if (coffee.getQuantity() >= quantity && quantity > 0) {
                 coffee.setQuantity(coffee.getQuantity() - quantity);
-                coffee.setStockStatus(coffee.getQuantity() == 0 ? "Out of Stock" : "In Stock");
                 coffeeRepository.save(coffee);
-
                 Order newOrder = new Order();
                 newOrder.setOrderDate(LocalDateTime.now());
                 newOrder.setStatus("COMPLETED");
                 newOrder.setTotalPrice(coffee.getPrice() * quantity);
                 newOrder.setUser(currentUser);
-
                 OrderItem item = new OrderItem();
                 item.setCoffee(coffee);
                 item.setQuantity(quantity);
                 item.setPriceAtPurchase((int) coffee.getPrice());
                 item.setOrder(newOrder);
-
                 newOrder.setItems(Collections.singletonList(item));
                 orderRepository.save(newOrder);
                 auditLogRepository.save(new AuditLog(username, "Bought " + quantity + "x " + coffee.getName(), LocalDateTime.now()));
@@ -154,27 +155,9 @@ public class StorageController {
     @GetMapping("/orders/delete/{id}")
     public String deleteOrder(@PathVariable Long id, Principal principal) {
         if (principal == null) return "redirect:/login";
-        String username = principal.getName();
-        User currentUser = userRepository.findByUsername(username).orElseThrow();
-
         orderRepository.findById(id).ifPresent(order -> {
-            boolean isAdmin = "ROLE_ADMIN".equals(currentUser.getRole());
-            boolean isOwner = order.getUser() != null && order.getUser().getUsername().equals(username);
-
-            if (isAdmin || isOwner) {
-                if (order.getItems() != null) {
-                    for (OrderItem item : order.getItems()) {
-                        Coffee coffee = item.getCoffee();
-                        if (coffee != null) {
-                            coffee.setQuantity(coffee.getQuantity() + item.getQuantity());
-                            coffee.setStockStatus("In Stock");
-                            coffeeRepository.save(coffee);
-                        }
-                    }
-                }
-                orderRepository.delete(order);
-                auditLogRepository.save(new AuditLog(username, "Deleted order ID: " + id, LocalDateTime.now()));
-            }
+            orderRepository.delete(order);
+            auditLogRepository.save(new AuditLog(principal.getName(), "Deleted order ID: " + id, LocalDateTime.now()));
         });
         return "redirect:/orders/all";
     }
@@ -209,30 +192,46 @@ public class StorageController {
 
     @GetMapping("/orders/invoice/generate/{id}")
     public void generateInvoice(@PathVariable Long id, jakarta.servlet.http.HttpServletResponse response) {
-        try {
-            orderRepository.findById(id).ifPresent(order -> {
-                response.setContentType("application/pdf");
-                response.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
-                try { invoiceService.exportOrder(order, response); } catch (Exception e) { e.printStackTrace(); }
-            });
-        } catch (Exception e) { e.printStackTrace(); }
+        orderRepository.findById(id).ifPresent(order -> {
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "attachment; filename=invoice.pdf");
+            try { invoiceService.exportOrder(order, response); } catch (Exception e) { e.printStackTrace(); }
+        });
     }
 
     @GetMapping("/roasteries")
     public String showRoasteries(Model model) {
         model.addAttribute("roasteries", roasteryRepository.findAll());
-        model.addAttribute("roastery", new Roastery());
+        if (!model.containsAttribute("roastery")) {
+            model.addAttribute("roastery", new Roastery());
+        }
         return "roastery_list";
+    }
+
+    @PostMapping("/roastery/save")
+    public String saveRoastery(@ModelAttribute Roastery roastery) {
+        roasteryRepository.save(roastery);
+        return "redirect:/roasteries";
+    }
+
+    @GetMapping("/roastery/edit/{id}")
+    public String editRoastery(@PathVariable Long id, Model model) {
+        roasteryRepository.findById(id).ifPresent(r -> model.addAttribute("roastery", r));
+        model.addAttribute("roasteries", roasteryRepository.findAll());
+        return "roastery_list";
+    }
+
+    @GetMapping("/roastery/delete/{id}")
+    public String deleteRoastery(@PathVariable Long id) {
+        roasteryRepository.deleteById(id);
+        return "redirect:/roasteries";
     }
 
     @PostMapping("/admin/user/update-role")
     public String updateRole(@RequestParam Long userId, @RequestParam String newRole) {
         userRepository.findById(userId).ifPresent(u -> {
             String formattedRole = newRole.toUpperCase();
-            if (!formattedRole.startsWith("ROLE_")) {
-                formattedRole = "ROLE_" + formattedRole;
-            }
-
+            if (!formattedRole.startsWith("ROLE_")) formattedRole = "ROLE_" + formattedRole;
             u.setRole(formattedRole);
             userRepository.save(u);
         });
