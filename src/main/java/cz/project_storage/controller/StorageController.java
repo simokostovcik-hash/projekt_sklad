@@ -125,31 +125,39 @@ public class StorageController {
         return "orders_list";
     }
 
-    @PostMapping("/orders/sell")
-    public String sellCoffee(@RequestParam Long id, @RequestParam int quantity, Principal principal) {
+    @PostMapping("/orders/confirm")
+    public String confirmOrder(@ModelAttribute Order orderData,
+                               @RequestParam Long coffeeId,
+                               @RequestParam int quantity,
+                               Principal principal) {
         if (principal == null) return "redirect:/login";
+
         String username = principal.getName();
         User currentUser = userRepository.findByUsername(username).orElseThrow();
-        coffeeRepository.findById(id).ifPresent(coffee -> {
-            if (coffee.getQuantity() >= quantity && quantity > 0) {
-                coffee.setQuantity(coffee.getQuantity() - quantity);
-                coffeeRepository.save(coffee);
-                Order newOrder = new Order();
-                newOrder.setOrderDate(LocalDateTime.now());
-                newOrder.setStatus("COMPLETED");
-                newOrder.setTotalPrice(coffee.getPrice() * quantity);
-                newOrder.setUser(currentUser);
-                OrderItem item = new OrderItem();
-                item.setCoffee(coffee);
-                item.setQuantity(quantity);
-                item.setPriceAtPurchase((int) coffee.getPrice());
-                item.setOrder(newOrder);
-                newOrder.setItems(Collections.singletonList(item));
-                orderRepository.save(newOrder);
-                auditLogRepository.save(new AuditLog(username, "Bought " + quantity + "x " + coffee.getName(), LocalDateTime.now()));
-            }
-        });
-        return "redirect:/coffee/all";
+        Coffee coffee = coffeeRepository.findById(coffeeId).orElseThrow();
+
+        if (coffee.getQuantity() >= quantity && quantity > 0) {
+            coffee.setQuantity(coffee.getQuantity() - quantity);
+            coffee.setStockStatus(coffee.getQuantity() > 0 ? "In Stock" : "Out of Stock");
+            coffeeRepository.save(coffee);
+
+            orderData.setOrderDate(LocalDateTime.now());
+            orderData.setStatus("COMPLETED");
+            orderData.setUser(currentUser);
+            orderData.setTotalPrice(coffee.getPrice() * quantity);
+
+            OrderItem item = new OrderItem();
+            item.setCoffee(coffee);
+            item.setQuantity(quantity);
+            item.setPriceAtPurchase((int) coffee.getPrice());
+            item.setOrder(orderData);
+
+            orderData.setItems(new ArrayList<>(Collections.singletonList(item)));
+
+            orderRepository.save(orderData);
+            auditLogRepository.save(new AuditLog(username, "Created order for " + quantity + "x " + coffee.getName(), LocalDateTime.now()));
+        }
+        return "redirect:/orders/all";
     }
 
     @GetMapping("/orders/delete/{id}")
@@ -160,11 +168,6 @@ public class StorageController {
             auditLogRepository.save(new AuditLog(principal.getName(), "Deleted order ID: " + id, LocalDateTime.now()));
         });
         return "redirect:/orders/all";
-    }
-
-    @GetMapping("/buy/{id}")
-    public String buyOne(@PathVariable Long id, Principal principal) {
-        return sellCoffee(id, 1, principal);
     }
 
     @GetMapping("/menu") public String mainMenu() { return "storage"; }

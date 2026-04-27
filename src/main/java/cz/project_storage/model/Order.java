@@ -17,6 +17,20 @@ public class Order {
     private String status;
     private Double totalPrice;
 
+    // Základní kontaktní a dodací údaje
+    private String fullName;
+    private String email;
+    private String address;
+    private String city;
+    private String zipCode;
+    private String paymentMethod;
+
+    // Firemní údaje
+    private boolean isCompany;
+    private String companyName;
+    private String ic; // IČO
+    private String dic; // DIČ
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
@@ -28,6 +42,7 @@ public class Order {
         this.orderDate = LocalDateTime.now();
         this.status = "PENDING";
         this.totalPrice = 0.0;
+        this.isCompany = false;
     }
 
     public Long getId() { return id; }
@@ -42,11 +57,42 @@ public class Order {
     public Double getTotalPrice() { return totalPrice; }
     public void setTotalPrice(Double totalPrice) { this.totalPrice = totalPrice; }
 
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public String getCity() { return city; }
+    public void setCity(String city) { this.city = city; }
+
+    public String getZipCode() { return zipCode; }
+    public void setZipCode(String zipCode) { this.zipCode = zipCode; }
+
+    public String getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+
+    public boolean isCompany() { return isCompany; }
+    public void setCompany(boolean company) { isCompany = company; }
+
+    public String getCompanyName() { return companyName; }
+    public void setCompanyName(String companyName) { this.companyName = companyName; }
+
+    public String getIc() { return ic; }
+    public void setIc(String ic) { this.ic = ic; }
+
+    public String getDic() { return dic; }
+    public void setDic(String dic) { this.dic = dic; }
+
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
 
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }
+
 
     public void addOrderItem(OrderItem item) {
         if (items == null) {

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Coffee Inventory | Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         .container-fluid { padding: 0 30px; }
         .d-none-filtered { display: none !important; }
@@ -16,6 +17,9 @@
         .range-value { font-weight: bold; color: #0d6efd; float: right; }
         .tag-badge { font-size: 0.7rem; margin-right: 2px; }
         .tags-container { margin-top: 4px; }
+        .modal-content { border-radius: 15px; overflow: hidden; }
+        .modal-header { border-bottom: none; }
+        .modal-footer { border-top: none; }
     </style>
 </head>
 <body class="bg-light">
@@ -41,21 +45,18 @@
                                 <option th:each="r : ${allRoasteries}" th:value="${r.id}" th:text="${r.name}"></option>
                             </select>
                         </div>
-
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">Flavor Tags (comma separated):</label>
-                            <input type="text" name="tagNames" class="form-control form-control-sm"
-                                   placeholder="e.g. Chocolate, Nutty"
+                            <label class="form-label small fw-bold">Flavor Tags:</label>
+                            <input type="text" name="tagNames" class="form-control form-control-sm" placeholder="e.g. Chocolate"
                                    th:value="${coffee.tags != null and !coffee.tags.isEmpty()} ? ${#strings.listJoin(coffee.tags.![name], ', ')} : ''">
                         </div>
-
                         <div class="row g-2">
                             <div class="col-6 mb-2">
-                                <label class="form-label small fw-bold">Stock (pcs):</label>
+                                <label class="form-label small fw-bold">Stock:</label>
                                 <input type="number" th:field="*{quantity}" class="form-control form-control-sm">
                             </div>
                             <div class="col-6 mb-2">
-                                <label class="form-label small fw-bold">Price (CZK):</label>
+                                <label class="form-label small fw-bold">Price:</label>
                                 <input type="number" step="0.1" th:field="*{price}" class="form-control form-control-sm">
                             </div>
                         </div>
@@ -110,15 +111,19 @@
                                 <td class="col-price fw-bold text-dark"><span th:text="${c.price}"></span> CZK</td>
                                 <td class="text-center">
                                     <div class="btn-group">
-                                        <a th:if="${c.quantity > 0}" th:href="@{/buy/{id}(id=${c.id})}"
-                                           class="btn btn-sm btn-success shadow-sm">🛒 Buy</a>
-
+                                        <button th:if="${c.quantity > 0}" type="button"
+                                                class="btn btn-sm btn-success shadow-sm buy-button"
+                                                th:data-id="${c.id}"
+                                                th:data-name="${c.name}"
+                                                th:data-price="${c.price}"
+                                                onclick="handleBuyClick(this)">
+                                            🛒 Buy
+                                        </button>
                                         <span th:if="${c.quantity <= 0}" class="badge bg-secondary p-2">Sold Out</span>
-
                                         <span sec:authorize="hasRole('ADMIN')" class="d-flex ms-1">
                                             <a th:href="@{/coffee/edit/{id}(id=${c.id})}" class="btn btn-sm btn-light border">✏️</a>
                                             <a th:href="@{/coffee/delete/{id}(id=${c.id})}" class="btn btn-sm btn-outline-danger ms-1"
-                                               onclick="return confirm('Really delete this coffee?')">🗑️</a>
+                                               onclick="return confirm('Delete?')">🗑️</a>
                                         </span>
                                     </div>
                                 </td>
@@ -138,7 +143,7 @@
                 <div class="card-body p-3">
                     <div class="mb-3">
                         <label class="filter-label">Search Name</label>
-                        <input type="text" id="filterGeneral" class="form-control form-control-sm" placeholder="Search..." onkeyup="runFilters()">
+                        <input type="text" id="filterGeneral" class="form-control form-control-sm" onkeyup="runFilters()">
                     </div>
                     <div class="mb-3">
                         <label class="filter-label">Roastery</label>
@@ -148,18 +153,11 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label class="filter-label">Flavor Tag</label>
-                        <select id="filterTag" class="form-select form-select-sm" onchange="runFilters()">
-                            <option value="">All Tags</option>
-                            <option th:each="t : ${allTags}" th:value="${t.name}" th:text="${t.name}"></option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="filter-label">Min Stock <span id="qVal" class="range-value">0</span> pcs</label>
+                        <label class="filter-label">Min Stock <span id="qVal" class="range-value">0</span></label>
                         <input type="range" id="filterQty" class="form-range" min="0" max="100" value="0" oninput="updateQty(this.value)">
                     </div>
                     <div class="mb-3">
-                        <label class="filter-label">Max Price <span id="pVal" class="range-value">5000</span> CZK</label>
+                        <label class="filter-label">Max Price <span id="pVal" class="range-value">5000</span></label>
                         <input type="range" id="filterPrice" class="form-range" min="0" max="5000" step="10" value="5000" oninput="updatePrice(this.value)">
                     </div>
                     <button class="btn btn-sm btn-outline-secondary w-100" onclick="resetAll()">Reset All</button>
@@ -169,8 +167,112 @@
     </div>
 </div>
 
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-dark text-white p-3">
+                <h5 class="modal-title">Finalize Order: <span id="modalCoffeeName" class="text-info"></span></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/orders/confirm}" method="post">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="coffeeId" id="modalCoffeeId">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="filter-label">Full Name</label>
+                            <input type="text" name="fullName" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="filter-label">Email</label>
+                            <input type="email" name="email" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="filter-label">Address</label>
+                            <input type="text" name="address" class="form-control form-control-sm" placeholder="Street and No." required>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="filter-label">City</label>
+                            <input type="text" name="city" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="filter-label">ZIP Code</label>
+                            <input type="text" name="zipCode" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="filter-label">Payment</label>
+                            <select name="paymentMethod" class="form-select form-select-sm">
+                                <option value="CARD">Credit Card</option>
+                                <option value="TRANSFER">Bank Transfer</option>
+                                <option value="CASH">Cash on Delivery</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="filter-label">Quantity</label>
+                            <input type="number" name="quantity" id="modalQuantity" value="1" min="1" class="form-control form-control-sm" oninput="updateModalTotal()">
+                        </div>
+                    </div>
+                    <div class="form-check form-switch mt-3 mb-2">
+                        <input class="form-check-input" type="checkbox" id="companySwitch" name="isCompany" onchange="toggleModalCompany()">
+                        <label class="form-check-label small fw-bold" for="companySwitch">Purchase for a Company</label>
+                    </div>
+                    <div id="modalCompanyFields" style="display: none;" class="p-3 bg-light border rounded mb-3">
+                        <div class="mb-2">
+                            <label class="filter-label">Company Name</label>
+                            <input type="text" name="companyName" class="form-control form-control-sm">
+                        </div>
+                        <div class="row">
+                            <div class="col-6"><label class="filter-label">IČO</label><input type="text" name="ic" class="form-control form-control-sm"></div>
+                            <div class="col-6"><label class="filter-label">DIČ</label><input type="text" name="dic" class="form-control form-control-sm"></div>
+                        </div>
+                    </div>
+                    <div class="bg-primary text-white p-2 rounded mt-3 d-flex justify-content-between align-items-center">
+                        <span class="small ps-2">TOTAL PRICE:</span>
+                        <span class="h5 mb-0 pe-2"><span id="modalTotalPrice">0</span> CZK</span>
+                    </div>
+                </div>
+                <div class="modal-footer p-3 bg-light">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-success px-4">Place Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     let sorts = {};
+    let currentCoffeePrice = 0;
+
+    function handleBuyClick(button) {
+        const id = button.getAttribute('data-id');
+        const name = button.getAttribute('data-name');
+        const price = parseFloat(button.getAttribute('data-price'));
+        openCheckout(id, name, price);
+    }
+
+    function openCheckout(id, name, price) {
+        currentCoffeePrice = price;
+        document.getElementById('modalCoffeeId').value = id;
+        document.getElementById('modalCoffeeName').innerText = name;
+        document.getElementById('modalQuantity').value = 1;
+        updateModalTotal();
+        document.getElementById('companySwitch').checked = false;
+        document.getElementById('modalCompanyFields').style.display = 'none';
+        let modalElement = document.getElementById('checkoutModal');
+        let checkoutModal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        checkoutModal.show();
+    }
+
+    function updateModalTotal() {
+        const qty = document.getElementById('modalQuantity').value;
+        const total = qty * currentCoffeePrice;
+        document.getElementById('modalTotalPrice').innerText = total.toFixed(2);
+    }
+
+    function toggleModalCompany() {
+        const fields = document.getElementById('modalCompanyFields');
+        fields.style.display = document.getElementById('companySwitch').checked ? 'block' : 'none';
+    }
 
     function updatePrice(v) { document.getElementById('pVal').innerText = v; runFilters(); }
     function updateQty(v) { document.getElementById('qVal').innerText = v; runFilters(); }
@@ -178,31 +280,25 @@
     function runFilters() {
         const q = document.getElementById('filterGeneral').value.toLowerCase();
         const r = document.getElementById('filterRoastery').value;
-        const tag = document.getElementById('filterTag').value;
         const minQty = parseInt(document.getElementById('filterQty').value);
         const maxP = parseFloat(document.getElementById('filterPrice').value);
-
         document.querySelectorAll('.coffee-row').forEach(row => {
             const name = row.querySelector('.col-name').textContent.toLowerCase();
             const roastery = row.getAttribute('data-roastery');
-            const rowTags = row.getAttribute('data-tags');
             const qty = parseInt(row.getAttribute('data-qty'));
-            const price = parseFloat(row.querySelector('.col-price').textContent.replace(/[^\d.]/g, ''));
-
+            const priceText = row.querySelector('.col-price').textContent.replace(/[^\d.]/g, '');
+            const price = parseFloat(priceText);
             const matchQuery = name.includes(q);
             const matchRoastery = r === "" || roastery === r;
-            const matchTag = tag === "" || (rowTags && rowTags.includes(tag));
             const matchStock = qty >= minQty;
             const matchPrice = price <= maxP;
-
-            row.classList.toggle('d-none-filtered', !(matchQuery && matchRoastery && matchTag && matchStock && matchPrice));
+            row.classList.toggle('d-none-filtered', !(matchQuery && matchRoastery && matchStock && matchPrice));
         });
     }
 
     function resetAll() {
         document.getElementById('filterGeneral').value = '';
         document.getElementById('filterRoastery').value = '';
-        document.getElementById('filterTag').value = '';
         document.getElementById('filterQty').value = 0;
         document.getElementById('filterPrice').value = 5000;
         updateQty(0); updatePrice(5000);
@@ -212,24 +308,17 @@
     function sortTable(idx, type, btn) {
         const body = document.getElementById('tableBody');
         const rows = Array.from(body.querySelectorAll('.coffee-row'));
-        if (rows.length === 0) return;
-
         let dir = sorts[idx] === 'asc' ? 'desc' : 'asc';
         sorts = { [idx]: dir };
-
         document.querySelectorAll('.sort-btn').forEach(b => b.innerText = '↕');
         btn.innerText = (dir === 'asc' ? '↑' : '↓');
-
         rows.sort((a, b) => {
             let vA = a.cells[idx].innerText.trim();
             let vB = b.cells[idx].innerText.trim();
             if (type === 'num') {
                 vA = parseFloat(vA.replace(/[^\d.]/g, '')) || 0;
                 vB = parseFloat(vB.replace(/[^\d.]/g, '')) || 0;
-            } else {
-                vA = vA.toLowerCase();
-                vB = vB.toLowerCase();
-            }
+            } else { vA = vA.toLowerCase(); vB = vB.toLowerCase(); }
             return dir === 'asc' ? (vA > vB ? 1 : -1) : (vA < vB ? 1 : -1);
         });
         rows.forEach(r => body.appendChild(r));
