@@ -1,51 +1,91 @@
-# Coffee Storage and Inventory System
+Coffee Storage and Inventory System
+A Spring Boot web application designed for coffee warehouse management and e-commerce operations. The system enables the tracking of stock levels, management of partner roasteries, and a complete workflow from order placement to PDF invoice generation.
 
-A Spring Boot web application designed for coffee warehouse management. This system allows tracking coffee stock levels, managing partner roasteries, and provides a secure interface for different user roles.
+Key Features
+Inventory Tracking: Real-time management of coffee varieties, weight, pricing, and stock status.
 
-## Key Features
+Roastery Management: Dedicated module for managing roastery details including country of origin and contact information.
 
-* **Inventory Tracking**: Management of coffee varieties, weight, pricing, and stock status (In Stock, Out of Stock, Ordered).
-* **Roastery Management**: Dedicated module to manage roastery details including country of origin and contact information.
-* **Role-Based Access Control**:
-    * **ADMIN**: Full authority to create, update, and delete inventory and roasteries.
-    * **USER**: Read-only access to browse inventory and apply filters.
-* **Advanced Filtering and Sorting**: JavaScript-powered dynamic filtering and multi-column table sorting.
-* **Audit Logging**: Backend logging system for administrative actions to ensure accountability.
-* **Data Seeding**: Functionality to populate the database from JSON sources via a dedicated generation endpoint.
+Order Management System:
 
-## Tech Stack
+Shopping Cart: Interactive management of items and quantities.
 
-* **Backend**: Java 23, Spring Boot 3.2.2, Spring Security
-* **Persistence**: Spring Data JPA, Hibernate, H2 Database (In-Memory)
-* **Frontend**: Thymeleaf, Bootstrap 5, JavaScript (ES6+)
-* **Build Tool**: Maven
+Checkout Workflow: Advanced form capturing shipping addresses and company billing details (ID/VAT).
+
+Order History: Comprehensive list of orders for both users and administrators.
+
+PDF Invoice Generation: Automatic creation of professional invoices using the OpenPDF (iText) library, including shipping/billing addresses and itemized totals.
+
+Role-Based Access Control (RBAC):
+
+ADMIN: Full authority for CRUD operations (Inventory, Roasteries, Orders) and audit logging.
+
+USER: Browse inventory, place orders, and access personal order history.
+
+Dynamic User Interface: JavaScript-powered table filtering and sorting, utilizing Bootstrap 5 modals for a modern user experience.
+
+Tech Stack
+Backend: Java 21/23, Spring Boot 3.2.2, Spring Security
+
+Persistence: Spring Data JPA, Hibernate, H2 Database
+
+Frontend: Thymeleaf, Bootstrap 5, JavaScript (ES6+)
+
+PDF Engine: OpenPDF (LibrePDF)
+
+Build Tool: Maven
 
 ## Project Structure
 
-```text
 src/main/java/cz/project_storage/
-├── controller/    # Web Request Handlers
-├── model/         # JPA Entities (Coffee, Roastery, User, AuditLog)
-├── repository/    # Data Access Layer
-├── service/       # Business Logic Layer
+├── controller/    # Web Request Handlers (Storage, User, Order)
+├── model/         # JPA Entities (Coffee, Roastery, User, Order, OrderItem, AuditLog)
+├── repository/    # Data Access Layer (JPA Repositories)
+├── service/       # Business Logic Layer (InvoiceService, Security Services)
 └── security/      # Security Configuration
-```
 
 Getting Started
 Prerequisites
-JDK 23 (or compatible version 21+)
+JDK 21 or higher (tested on JDK 23)
 
 Maven
 
 Installation and Execution
 Clone the repository:
-git clone [https://github.com/simokostovcik-hash/projekt_sklad.git](https://github.com/simokostovcik-hash/projekt_sklad.git)
 
+Bash
+git clone https://github.com/simokostovcik-hash/projekt_sklad.git
+Database Configuration:
+The application uses H2 by default. Configuration can be found in src/main/resources/application.properties:
+
+Properties
+spring.jpa.hibernate.ddl-auto=update
 Build and run the application:
+
+Bash
 mvn spring-boot:run
+Access the application:
 
-Access the application at: http://localhost:8080
-(role_admin) Login: admin / Password: admin123
+URL: http://localhost:8080
 
-Data Generation
-To populate the database with sample data for testing purposes, log in as an Admin and navigate to the Generate link (http://localhost:8080/test/generate-data). This executes the generation logic within the StorageController, which parses predefined entries from the data.json resource into the H2 database.
+Admin Credentials: admin / admin123
+
+Data Initialization
+To quickly populate the database with sample data for testing:
+
+Log in as an Admin.
+
+Navigate to the Generate link (or go to /test/generate-data).
+
+This executes logic within the controller that parses data.json and seeds the H2 database with sample coffee and roastery entries.
+
+Invoicing Logic
+The system utilizes a dedicated InvoiceService to generate A4 PDF documents. The service automatically detects if an order is a "Company Order" and adjusts the invoice header to include:
+
+Full Name and Shipping Address.
+
+Company Name, ID (IČO), and VAT (DIČ) where applicable.
+
+Itemized table of purchased products.
+
+Calculated Grand Total in CZK.
