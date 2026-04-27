@@ -1,48 +1,39 @@
-Coffee Storage and Inventory System
+# Coffee Storage and Inventory System
+
 A Spring Boot web application designed for coffee warehouse management and e-commerce operations. The system enables the tracking of stock levels, management of partner roasteries, and a complete workflow from order placement to PDF invoice generation.
 
-Key Features
-Inventory Tracking: Real-time management of coffee varieties, weight, pricing, and stock status.
+## Key Features
 
-Roastery Management: Dedicated module for managing roastery details including country of origin and contact information.
+* **Inventory Tracking**: Real-time management of coffee varieties, weight, pricing, and stock status.
+* **Roastery Management**: Dedicated module for managing roastery details including country of origin and contact information.
+* **Order Management System**:
+    * **Shopping Cart**: Interactive management of items and quantities.
+    * **Checkout Workflow**: Advanced form capturing shipping addresses and company billing details (ID/VAT).
+    * **Order History**: Comprehensive list of orders for both users and administrators.
+* **PDF Invoice Generation**: Automatic creation of professional invoices using the OpenPDF (iText) library, including shipping/billing addresses and itemized totals.
+* **Role-Based Access Control (RBAC)**:
+    * **ADMIN**: Full authority for CRUD operations (Inventory, Roasteries, Orders) and audit logging.
+    * **USER**: Browse inventory, place orders, and access personal order history.
+* **Dynamic User Interface**: JavaScript-powered table filtering and sorting, utilizing Bootstrap 5 modals for a modern user experience.
 
-Order Management System:
+## Tech Stack
 
-Shopping Cart: Interactive management of items and quantities.
-
-Checkout Workflow: Advanced form capturing shipping addresses and company billing details (ID/VAT).
-
-Order History: Comprehensive list of orders for both users and administrators.
-
-PDF Invoice Generation: Automatic creation of professional invoices using the OpenPDF (iText) library, including shipping/billing addresses and itemized totals.
-
-Role-Based Access Control (RBAC):
-
-ADMIN: Full authority for CRUD operations (Inventory, Roasteries, Orders) and audit logging.
-
-USER: Browse inventory, place orders, and access personal order history.
-
-Dynamic User Interface: JavaScript-powered table filtering and sorting, utilizing Bootstrap 5 modals for a modern user experience.
-
-Tech Stack
-Backend: Java 21/23, Spring Boot 3.2.2, Spring Security
-
-Persistence: Spring Data JPA, Hibernate, H2 Database
-
-Frontend: Thymeleaf, Bootstrap 5, JavaScript (ES6+)
-
-PDF Engine: OpenPDF (LibrePDF)
-
-Build Tool: Maven
+* **Backend**: Java 21/23, Spring Boot 3.2.2, Spring Security
+* **Persistence**: Spring Data JPA, Hibernate, H2 Database
+* **Frontend**: Thymeleaf, Bootstrap 5, JavaScript (ES6+)
+* **PDF Engine**: OpenPDF (LibrePDF)
+* **Build Tool**: Maven
 
 ## Project Structure
 
+```text
 src/main/java/cz/project_storage/
 ├── controller/    # Web Request Handlers (Storage, User, Order)
 ├── model/         # JPA Entities (Coffee, Roastery, User, Order, OrderItem, AuditLog)
 ├── repository/    # Data Access Layer (JPA Repositories)
 ├── service/       # Business Logic Layer (InvoiceService, Security Services)
 └── security/      # Security Configuration
+```
 
 Getting Started
 Prerequisites
