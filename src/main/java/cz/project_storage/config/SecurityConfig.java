@@ -22,7 +22,10 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/register", "/css/**", "/js/**", "/h2-console/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/coffee/delete/**", "/coffee/edit/**", "/coffee/save/**").hasRole("ADMIN")
-                        .requestMatchers("/roasteries/**", "/roastery/**").hasRole("ADMIN")
+
+                        .requestMatchers("/roastery/delete/**", "/roastery/edit/**", "/roastery/save/**").hasRole("ADMIN")
+                        .requestMatchers("/roasteries", "/roastery/all", "/roastery/view/**").hasAnyRole("USER", "ADMIN")
+
                         .requestMatchers("/menu", "/coffee/all", "/buy/**", "/orders/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
