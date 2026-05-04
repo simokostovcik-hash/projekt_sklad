@@ -25,9 +25,8 @@ A Spring Boot web application designed for coffee warehouse management and e-com
 * **Build Tool**: Maven
 
 ## Project Structure
-
 ```text
-src/main/java/cz/project_storage/
+src/main/java/cz/projekt_sklad/
 ├── controller/    # Web Request Handlers (Storage, User, Order)
 ├── model/         # JPA Entities (Coffee, Roastery, User, Order, OrderItem, AuditLog)
 ├── repository/    # Data Access Layer (JPA Repositories)
@@ -47,26 +46,29 @@ src/main/java/cz/project_storage/
     git clone [https://github.com/simokostovcik-hash/projekt_sklad.git](https://github.com/simokostovcik-hash/projekt_sklad.git)
     ```
 
-2.  **Database Configuration**:
-    The application uses H2 by default. Configuration can be found in `src/main/resources/application.properties`:
-    ```properties
-    spring.jpa.hibernate.ddl-auto=update
-    ```
+2. **Database Configuration**:
+   The application uses H2 by default. Configuration can be found in `src/main/resources/application.properties`.
 
-3.  **Build and run the application**:
-    ```bash
-    mvn spring-boot:run
-    ```
+3. **Build and run the application**:
+   Choose one of the following methods to ensure a successful start:
 
-4.  **Access the application**:
+    * **Option A (IntelliJ - Recommended)**: Open `ProjektSkladApplication.java` and click the **green arrow** next to the `main` method.
+    * **Option B (Maven Panel)**: In the Maven tab, run `spring-boot:run` with the parameter `-DskipTests` to bypass template test conflicts.
+    * **Option C (Terminal)**:
+      ```bash
+      mvn spring-boot:run -DskipTests
+      ```
+
+4. **Access the application**:
     * URL: http://localhost:8080
-    * **Admin Credentials**: admin / admin123
+    * **Admin Login Credentials**: admin / admin123
+    * **User Credentials**: test / test
 
 ## Data Initialization
 To quickly populate the database with sample data for testing:
-1.  Log in as an **Admin**.
-2.  Navigate to the **Generate** link (or go to `/test/generate-data`).
-3.  This executes logic within the controller that parses `data.json` and seeds the H2 database with sample coffee and roastery entries.
+1. Log in as an **Admin**.
+2. Navigate to the **Generate** link (or go to `/test/generate-data`).
+3. This executes logic within the controller that parses `data.json` and seeds the H2 database with sample coffee and roastery entries.
 
 ## Invoicing Logic
 The system utilizes a dedicated `InvoiceService` to generate A4 PDF documents. The service automatically detects if an order is a "Company Order" and adjusts the invoice header to include:
