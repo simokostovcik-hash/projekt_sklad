@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -239,5 +240,52 @@ public class StorageController {
             userRepository.save(u);
         });
         return "redirect:/admin/users";
+    }
+
+    @GetMapping("/test/generate-data")
+    @ResponseBody
+    public String generateData() {
+        coffeeRepository.deleteAll();
+        roasteryRepository.deleteAll();
+
+        Roastery p1 = new Roastery();
+        p1.setName("Dos Mundos");
+        p1.setCountry("Czech Republic");
+
+        Roastery p2 = new Roastery();
+        p2.setName("The Barn");
+        p2.setCountry("Germany");
+
+        Roastery p3 = new Roastery();
+        p3.setName("Hasbean");
+        p3.setCountry("United Kingdom");
+
+        roasteryRepository.saveAll(List.of(p1, p2, p3));
+
+        List<Coffee> coffees = new ArrayList<>();
+        String[] names = {"Ethiopia Yirgacheffe", "Brazil Santos", "Colombia Supremo", "Kenya AA", "Vietnam Robusta"};
+        String[] types = {"Espresso", "Filter", "Omni Roast"};
+
+        Random random = new Random();
+
+        for (int i = 1; i <= 100; i++) {
+            Coffee c = new Coffee();
+            c.setName(names[i % names.length] + " #" + i);
+            c.setType(types[i % types.length]);
+            c.setQuantity(10 + random.nextInt(90));
+            c.setPrice(200.0 + (i * 2.5));
+            c.setOrderDate(LocalDate.now());
+            c.setStockStatus("In Stock");
+
+            if (i % 3 == 0) c.setRoastery(p1);
+            else if (i % 3 == 1) c.setRoastery(p2);
+            else c.setRoastery(p3);
+
+            coffees.add(c);
+        }
+
+        coffeeRepository.saveAll(coffees);
+
+        return "Successfully generated 3 roasteries and 100 coffee entries! <br><a href='/coffee/all'>Zpět na přehled</a>";
     }
 }
