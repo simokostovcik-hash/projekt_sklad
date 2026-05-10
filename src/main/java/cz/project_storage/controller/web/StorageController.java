@@ -1,14 +1,17 @@
-package cz.project_storage.controller;
+package cz.project_storage.controller.web;
 
 import cz.project_storage.model.*;
 import cz.project_storage.repository.*;
+import cz.project_storage.service.CoffeeService;
 import cz.project_storage.service.InvoiceService;
 import cz.project_storage.service.OrderService;
+import cz.project_storage.service.UserService;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional; // Přidáno pro integritu
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -21,25 +24,32 @@ import java.util.*;
 @Controller
 public class StorageController {
 
+    @Autowired private CoffeeService coffeeService;
+    @Autowired private OrderService orderService;
+    @Autowired private UserService userService;
+    @Autowired private InvoiceService invoiceService;
+
     @Autowired private CoffeeRepository coffeeRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private AuditLogRepository auditLogRepository;
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private RoasteryRepository roasteryRepository;
-    @Autowired private OrderService orderService;
     @Autowired private OrderRepository orderRepository;
     @Autowired private TagRepository tagRepository;
-    @Autowired private InvoiceService invoiceService;
+    @Autowired private OrderItemRepository orderItemRepository; // Přidáno pro správné mazání
 
     private void prepareInventoryModel(Model model) {
         List<Coffee> list = coffeeRepository.findAll();
         model.addAttribute("coffeeList", (list != null) ? list : new ArrayList<>());
+
         double total = (list != null) ? list.stream()
                 .mapToDouble(c -> c.getPrice() * c.getQuantity())
                 .sum() : 0.0;
+
         model.addAttribute("total", total);
         model.addAttribute("allRoasteries", roasteryRepository.findAll());
         model.addAttribute("allTags", tagRepository.findAll());
+
         if (!model.containsAttribute("coffee")) {
             model.addAttribute("coffee", new Coffee());
         }
@@ -73,9 +83,11 @@ public class StorageController {
             prepareInventoryModel(model);
             return "coffee_list";
         }
+
         if (coffee.getRoastery() != null && coffee.getRoastery().getId() != null) {
             roasteryRepository.findById(coffee.getRoastery().getId()).ifPresent(coffee::setRoastery);
         }
+
         Set<Tag> processedTags = new HashSet<>();
         if (tagNames != null && !tagNames.trim().isEmpty()) {
             for (String name : tagNames.split(",")) {
@@ -89,9 +101,11 @@ public class StorageController {
         }
         coffee.setTags(processedTags);
         coffee.setStockStatus(coffee.getQuantity() > 0 ? "In Stock" : "Out of Stock");
+
         String author = (principal != null) ? principal.getName() : "System";
         coffeeRepository.save(coffee);
         auditLogRepository.save(new AuditLog(author, "Saved coffee: " + coffee.getName(), LocalDateTime.now()));
+
         return "redirect:/coffee/all";
     }
 
@@ -114,14 +128,17 @@ public class StorageController {
     @GetMapping("/orders/all")
     public String showMyOrders(Model model, Principal principal) {
         if (principal == null) return "redirect:/login";
+
         String username = principal.getName();
         User currentUser = userRepository.findByUsername(username).orElse(null);
+
         List<Order> orders;
         if (currentUser != null && "ROLE_ADMIN".equals(currentUser.getRole())) {
             orders = orderRepository.findAll();
         } else {
             orders = orderRepository.findByUserUsername(username);
         }
+
         model.addAttribute("orders", orders);
         return "orders_list";
     }
@@ -244,28 +261,21 @@ public class StorageController {
 
     @GetMapping("/test/generate-data")
     @ResponseBody
+    @Transactional
     public String generateData() {
+        orderItemRepository.deleteAll();
+        orderRepository.deleteAll();
         coffeeRepository.deleteAll();
         roasteryRepository.deleteAll();
 
-        Roastery p1 = new Roastery();
-        p1.setName("Dos Mundos");
-        p1.setCountry("Czech Republic");
-
-        Roastery p2 = new Roastery();
-        p2.setName("The Barn");
-        p2.setCountry("Germany");
-
-        Roastery p3 = new Roastery();
-        p3.setName("Hasbean");
-        p3.setCountry("United Kingdom");
-
+        Roastery p1 = new Roastery(); p1.setName("Dos Mundos"); p1.setCountry("Czech Republic");
+        Roastery p2 = new Roastery(); p2.setName("The Barn"); p2.setCountry("Germany");
+        Roastery p3 = new Roastery(); p3.setName("Hasbean"); p3.setCountry("United Kingdom");
         roasteryRepository.saveAll(List.of(p1, p2, p3));
 
         List<Coffee> coffees = new ArrayList<>();
         String[] names = {"Ethiopia Yirgacheffe", "Brazil Santos", "Colombia Supremo", "Kenya AA", "Vietnam Robusta"};
         String[] types = {"Espresso", "Filter", "Omni Roast"};
-
         Random random = new Random();
 
         for (int i = 1; i <= 100; i++) {
@@ -276,16 +286,13 @@ public class StorageController {
             c.setPrice(200.0 + (i * 2.5));
             c.setOrderDate(LocalDate.now());
             c.setStockStatus("In Stock");
-
             if (i % 3 == 0) c.setRoastery(p1);
             else if (i % 3 == 1) c.setRoastery(p2);
             else c.setRoastery(p3);
-
             coffees.add(c);
         }
-
         coffeeRepository.saveAll(coffees);
 
-        return "Successfully generated 3 roasteries and 100 coffee entries! <br><a href='/coffee/all'>Zpět na přehled</a>";
+        return "Successfully generated data! <br><a href='/coffee/all'>Zpět na přehled</a>";
     }
 }

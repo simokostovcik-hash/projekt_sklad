@@ -1,5 +1,6 @@
 package cz.project_storage.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class Roastery {
     private String website;
 
     @OneToMany(mappedBy = "roastery", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Coffee> coffees;
 
     public Roastery() {

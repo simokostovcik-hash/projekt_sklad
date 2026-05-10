@@ -1,0 +1,129 @@
+.container-fluid {
+    max-width: 1400px;
+    padding: 0 30px;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+    transition: 0.3s;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+}
+
+.card-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+.table-sm-text {
+    font-size: 0.85rem;
+}
+
+th {
+    white-space: nowrap;
+}
+
+.d-none-filtered {
+    display: none !important;
+}
+
+.sort-btn {
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0 5px;
+    color: #adb5bd;
+    transition: color 0.2s;
+    font-style: normal;
+}
+
+.sort-btn:hover {
+    color: #0d6efd;
+}
+
+.filter-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.table-responsive {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.sticky-top {
+    top: 0;
+    z-index: 1020;
+    background-color: white !important;
+}
+
+.range-value {
+    font-weight: bold;
+    color: #0d6efd;
+    float: right;
+}
+
+.tag-badge {
+    font-size: 0.7rem;
+    margin-right: 2px;
+}
+
+.tags-container {
+    margin-top: 4px;
+}
+
+.modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+.badge-status {
+    font-size: 0.65rem;
+    padding: 0.4em 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 20px;
+}
+
+.empty-state {
+    padding: 4rem 0;
+}
+
+.address-box {
+    line-height: 1.2;
+    max-width: 200px;
+}
+
+.company-info {
+    font-style: italic;
+    color: #6c757d;
+    border-top: 1px solid #dee2e6;
+    margin-top: 4px;
+    padding-top: 2px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}

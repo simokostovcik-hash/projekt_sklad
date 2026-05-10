@@ -18,46 +18,40 @@ A Spring Boot web application designed for coffee warehouse management and e-com
 
 ## Tech Stack
 
-* **Backend**: Java 21/23, Spring Boot 3.2.2, Spring Security
-* **Persistence**: Spring Data JPA, Hibernate, H2 Database
+* **Backend**: Java 21+, Spring Boot 3.2.2, Spring Security
+* **Persistence**: Spring Data JPA, Hibernate, PostgreSQL
 * **Frontend**: Thymeleaf, Bootstrap 5, JavaScript (ES6+)
 * **PDF Engine**: OpenPDF (LibrePDF)
 * **Build Tool**: Maven
 
 ## Project Structure
-```text
+
 src/main/java/cz/projekt_sklad/
 ├── controller/    # Web Request Handlers (Storage, User, Order)
 ├── model/         # JPA Entities (Coffee, Roastery, User, Order, OrderItem, AuditLog)
 ├── repository/    # Data Access Layer (JPA Repositories)
 ├── service/       # Business Logic Layer (InvoiceService, Security Services)
 └── security/      # Security Configuration
-```
 
 ## Getting Started
 
 ### Prerequisites
 * **JDK 21** or higher (tested on JDK 23)
 * **Maven**
+* **PostgreSQL Server** (locally or via Docker)
 
 ### Installation and Execution
-1.  **Clone the repository**:
-    ```bash
-    git clone [https://github.com/simokostovcik-hash/projekt_sklad.git](https://github.com/simokostovcik-hash/projekt_sklad.git)
-    ```
+1. **Clone the repository**:
+   git clone https://github.com/simokostovcik-hash/projekt_sklad.git
 
 2. **Database Configuration**:
-   The application uses H2 by default. Configuration can be found in `src/main/resources/application.properties`.
+   The application uses PostgreSQL. Ensure you have a database created (default name: coffee_db). Database connection settings (URL, username, password) can be found and modified in src/main/resources/application.properties.
 
 3. **Build and run the application**:
    Choose one of the following methods to ensure a successful start:
-
-    * **Option A (IntelliJ - Recommended)**: Open `ProjektSkladApplication.java` and click the **green arrow** next to the `main` method.
-    * **Option B (Maven Panel)**: In the Maven tab, run `spring-boot:run` with the parameter `-DskipTests` to bypass template test conflicts.
-    * **Option C (Terminal)**:
-      ```bash
-      mvn spring-boot:run -DskipTests
-      ```
+    * **Option A (IntelliJ - Recommended)**: Open ProjektSkladApplication.java and click the green arrow next to the main method.
+    * **Option B (Maven Panel)**: In the Maven tab, run spring-boot:run with the parameter -DskipTests to bypass template test conflicts.
+    * **Option C (Terminal)**: mvn spring-boot:run -DskipTests
 
 4. **Access the application**:
     * URL: http://localhost:8080
@@ -67,11 +61,11 @@ src/main/java/cz/projekt_sklad/
 ## Data Initialization
 To quickly populate the database with sample data for testing:
 1. Log in as an **Admin**.
-2. Navigate to the **Generate** link (or go to `/test/generate-data`).
-3. This executes logic within the controller that parses `data.json` and seeds the H2 database with sample coffee and roastery entries.
+2. Navigate to the **Generate** link (or go to /test/generate-data).
+3. This executes logic within the controller that parses data.json and seeds the PostgreSQL database with sample coffee and roastery entries.
 
 ## Invoicing Logic
-The system utilizes a dedicated `InvoiceService` to generate A4 PDF documents. The service automatically detects if an order is a "Company Order" and adjusts the invoice header to include:
+The system utilizes a dedicated InvoiceService to generate A4 PDF documents. The service automatically detects if an order is a "Company Order" and adjusts the invoice header to include:
 * Full Name and Shipping Address.
 * Company Name, ID (IČO), and VAT (DIČ) where applicable.
 * Itemized table of purchased products.

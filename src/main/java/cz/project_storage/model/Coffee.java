@@ -1,5 +1,6 @@
 package cz.project_storage.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -37,6 +38,7 @@ public class Coffee {
     @NotNull(message = "Please select a roastery")
     @ManyToOne
     @JoinColumn(name = "roastery_id")
+    @JsonBackReference
     private Roastery roastery;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -87,6 +89,4 @@ public class Coffee {
 
     public Set<Tag> getTags() { return tags; }
     public void setTags(Set<Tag> tags) { this.tags = tags; }
-
-
 }
