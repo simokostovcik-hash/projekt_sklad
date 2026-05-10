@@ -25,13 +25,14 @@ A Spring Boot web application designed for coffee warehouse management and e-com
 * **Build Tool**: Maven
 
 ## Project Structure
-
+```
 src/main/java/cz/projekt_sklad/
 ├── controller/    # Web Request Handlers (Storage, User, Order)
 ├── model/         # JPA Entities (Coffee, Roastery, User, Order, OrderItem, AuditLog)
 ├── repository/    # Data Access Layer (JPA Repositories)
 ├── service/       # Business Logic Layer (InvoiceService, Security Services)
 └── security/      # Security Configuration
+```
 
 ## Getting Started
 
