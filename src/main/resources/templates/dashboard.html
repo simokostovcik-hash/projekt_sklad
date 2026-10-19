@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Coffee Storage | Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .stats-card { transition: transform 0.2s; border: none; }
+        .stats-card:hover { transform: translateY(-5px); }
+        .icon-box { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg coffee-nav"><div class="container-fluid px-4"><a class="navbar-brand" th:href="@{/menu}">☕ KÁVOVÝ SKLAD</a><div class="d-flex flex-wrap gap-2 align-items-center"><a th:href="@{/menu}" class="nav-link">Úvod</a><a th:href="@{/coffee/all}" class="nav-link">Káva</a><a th:href="@{/orders/all}" class="nav-link">Objednávky</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/dashboard}" class="nav-link">Dashboard</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/roasteries}" class="nav-link">Pražírny</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}" class="nav-link">Správa</a><form th:action="@{/logout}" method="post"><button class="btn btn-sm btn-outline-light" type="submit">Odhlásit</button></form></div></div></nav>
+
+
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm stats-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box bg-primary text-white me-3">💰</div>
+                    <div>
+                        <h6 class="text-muted mb-0 small uppercase">Stock Value</h6>
+                        <h3 class="mb-0 fw-bold" th:text="${#numbers.formatDecimal(totalValue, 1, 2)} + ' CZK'">0.00</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm stats-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box bg-success text-white me-3">📦</div>
+                    <div>
+                        <h6 class="text-muted mb-0 small uppercase">Total Packs</h6>
+                        <h3 class="mb-0 fw-bold" th:text="${totalPacks}">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm stats-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box bg-warning text-white me-3">⚠️</div>
+                    <div>
+                        <h6 class="text-muted mb-0 small uppercase">Low Stock Items</h6>
+                        <h3 class="mb-0 fw-bold" th:text="${lowStockCount}">0</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7 mb-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header bg-white fw-bold">Inventory Share by Roastery</div>
+                <div class="card-body">
+                    <canvas id="roasteryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5 mb-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header bg-white fw-bold">Recent Audit Logs</div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush small">
+                        <li th:each="log : ${recentLogs}" class="list-group-item">
+                            <span class="text-muted" th:text="${#temporals.format(log.timestamp, 'HH:mm')}">12:00</span>
+                            <strong th:text="${log.user}">Admin</strong>:
+                            <span th:text="${log.action}">Action details...</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-white border-top-0 text-center">
+                    <a th:href="@{/admin/users}" class="btn btn-link btn-sm">View all logs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    const labels = [[${roasteryLabels}]];
+    const dataValues = [[${roasteryCounts}]];
+
+    const ctx = document.getElementById('roasteryChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Packs in Stock',
+                data: dataValues,
+                backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                borderColor: 'rgba(13, 110, 253, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

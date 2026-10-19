@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Menu | Coffee Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
+    <style>
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg coffee-nav"><div class="container-fluid px-4"><a class="navbar-brand" th:href="@{/menu}">☕ KÁVOVÝ SKLAD</a><div class="d-flex flex-wrap gap-2 align-items-center"><a th:href="@{/menu}" class="nav-link">Úvod</a><a th:href="@{/coffee/all}" class="nav-link">Káva</a><a th:href="@{/orders/all}" class="nav-link">Objednávky</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/dashboard}" class="nav-link">Dashboard</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/roasteries}" class="nav-link">Pražírny</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}" class="nav-link">Správa</a><form th:action="@{/logout}" method="post"><button class="btn btn-sm btn-outline-light" type="submit">Odhlásit</button></form></div></div></nav>
+
+
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h1 class="display-4 fw-bold">Welcome to the System</h1>
+            <p class="lead text-muted">Select a section you wish to manage.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm card-hover border-primary">
+                <div class="card-body text-center p-4">
+                    <div class="display-1 mb-3">📦</div>
+                    <h3 class="card-title">Coffee Inventory</h3>
+                    <p class="card-text text-muted">Stock overview, adding new batches, and quantity management.</p>
+                    <a href="/coffee/all" class="btn btn-primary btn-lg w-100 mt-3">Enter Inventory</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4" sec:authorize="hasRole('ADMIN')">
+            <div class="card h-100 shadow-sm card-hover border-dark">
+                <div class="card-body text-center p-4">
+                    <div class="display-1 mb-3">🏭</div>
+                    <h3 class="card-title">Roasteries</h3>
+                    <p class="card-text text-muted">List of supplier roasteries, locations, and countries of origin.</p>
+                    <a th:href="@{/roasteries}" class="btn btn-dark btn-lg w-100 mt-3">Manage Roasteries</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4" sec:authorize="hasRole('ADMIN')">
+            <div class="card h-100 shadow-sm card-hover border-danger">
+                <div class="card-body text-center p-4">
+                    <div class="display-1 mb-3">⚙️</div>
+                    <h3 class="card-title">Admin Panel</h3>
+                    <p class="card-text text-muted">User management, role assignments, and system audit logs.</p>
+                    <a href="/admin/users" class="btn btn-danger btn-lg w-100 mt-3">Manage Users</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 py-3 text-center text-muted border-top">
+        &copy; 2026 Coffee Storage - Semester Project
+    </footer>
+</div>
+
+</body>
+</html>
