@@ -135,7 +135,8 @@
                                 th:classappend="${c.quantity == 0} ? 'out-of-stock' : (${c.quantity < 5} ? 'low-stock' : '')"
                                 th:data-roastery="${c.roastery != null ? c.roastery.name : ''}"
                                 th:data-tags="${c.tags != null and !c.tags.isEmpty() ? #strings.listJoin(c.tags.![name], ',') : ''}"
-                                th:data-qty="${c.quantity}">
+                                th:data-qty="${c.quantity}"
+                                th:data-price="${c.price}">
                                 <td class="ps-3">
                                     <div class="d-flex align-items-center">
                                         <img th:if="${c.imageUrl != null and !#strings.isEmpty(c.imageUrl)}" th:src="${c.imageUrl}" class="product-thumb" alt="Fotografie kávy" loading="lazy" />
@@ -164,7 +165,8 @@
                                                 class="btn btn-sm btn-success shadow-sm buy-btn-trigger"
                                                 th:data-id="${c.id}"
                                                 th:data-name="${c.name}"
-                                                th:data-qty="${c.quantity}">
+                                                th:data-qty="${c.quantity}"
+                                th:data-price="${c.price}">
                                             🛒 Buy
                                         </button>
 
@@ -257,11 +259,11 @@
             const roastery = row.getAttribute('data-roastery');
             const rowTags = row.getAttribute('data-tags');
             const qty = parseInt(row.getAttribute('data-qty'));
-            const price = parseFloat(row.querySelector('.col-price').textContent.replace(/[^\d.]/g, ''));
+            const price = Number(row.dataset.price);
 
             const matchQuery = name.includes(q);
             const matchRoastery = r === "" || roastery === r;
-            const matchTag = tag === "" || (rowTags && rowTags.includes(tag));
+            const matchTag = tag === "" || (rowTags && rowTags.split(',').map(t => t.trim()).includes(tag));
             const matchStock = qty >= minQty;
             const matchPrice = price <= maxP;
 

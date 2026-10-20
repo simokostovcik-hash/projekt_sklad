@@ -13,16 +13,9 @@ public class OrderItem {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    // Historical rows use COFFEE_ID -> legacy COFFEE table. Keep this association
-    // read-only so existing invoices and order history remain accessible.
+    // Unified coffee reference: all order items use COFFEE_ID.
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "coffee_id", insertable = false, updatable = false)
-    private LegacyCoffee legacyCoffee;
-
-    // New React orders use COFFEES, not the legacy COFFEE table.
-    // Hibernate adds this nullable column without changing old COFFEE_ID values.
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "shop_coffee_id", foreignKey = @ForeignKey(name = "FK_ORDER_ITEM_SHOP_COFFEE"))
+    @JoinColumn(name = "coffee_id", foreignKey = @ForeignKey(name = "FK_ORDER_ITEM_COFFEE"))
     private Coffee coffee;
 
     private Integer quantity;
@@ -46,7 +39,6 @@ public class OrderItem {
     public Coffee getCoffee() { return coffee; }
     public String getDisplayCoffeeName() {
         if (coffee != null) return coffee.getName();
-        if (legacyCoffee != null) return legacyCoffee.getName();
         return "Neznámá káva";
     }
     public Integer getDisplayUnitPrice() { return priceAtPurchase; }

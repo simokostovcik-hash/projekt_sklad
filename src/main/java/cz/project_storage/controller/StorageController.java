@@ -24,12 +24,12 @@ public class StorageController {
     @Autowired private CoffeeRepository coffeeRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private AuditLogRepository auditLogRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private RoasteryRepository roasteryRepository;
     @Autowired private OrderService orderService;
     @Autowired private OrderRepository orderRepository;
     @Autowired private TagRepository tagRepository;
     @Autowired private InvoiceService invoiceService;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     private void prepareInventoryModel(Model model) {
         List<Coffee> list = coffeeRepository.findAll();

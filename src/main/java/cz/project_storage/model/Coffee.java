@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "coffees")
+@Table(name = "coffee")
 public class Coffee {
 
     @Id
@@ -52,7 +52,7 @@ public class Coffee {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "coffees_tags",
+            name = "coffee_tags",
             joinColumns = @JoinColumn(
                     name = "coffee_id",
                     referencedColumnName = "id"
