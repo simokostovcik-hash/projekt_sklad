@@ -36,3 +36,18 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Databaze - zachovat lokalne
+/data/
+*.mv.db
+*.trace.db
+sklad.db
+
+# React frontend
+**/node_modules/
+**/dist/
+
+# Lokalni nastaveni a tajne udaje
+.idea/workspace.xml
+.env
+.env.*

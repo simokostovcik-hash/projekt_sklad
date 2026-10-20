@@ -1,6 +1,5 @@
 package cz.project_storage.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,7 +7,6 @@ import java.util.Set;
 @Entity
 @Table(name = "tags")
 public class Tag {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,18 +15,13 @@ public class Tag {
     private String name;
 
     @ManyToMany(mappedBy = "tags")
-    @JsonIgnore
     private Set<Coffee> coffees = new HashSet<>();
 
     public Tag() {}
     public Tag(String name) { this.name = name; }
 
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-
     public Set<Coffee> getCoffees() { return coffees; }
-    public void setCoffees(Set<Coffee> coffees) { this.coffees = coffees; }
 }

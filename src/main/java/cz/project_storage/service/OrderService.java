@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -36,26 +37,25 @@ public class OrderService {
         }
         coffeeRepository.save(coffee);
 
-
         Order order = new Order();
         order.setUser(user);
 
-
-        double totalPrice = coffee.getPrice() * quantity;
+        double totalPrice = 0.0;
+        if (coffee.getPrice() != null) {
+            totalPrice = coffee.getPrice().multiply(BigDecimal.valueOf(quantity)).doubleValue();
+        }
         order.setTotalPrice(totalPrice);
         order.setStatus("COMPLETED");
 
+        int priceAtPurchase = (coffee.getPrice() != null) ? coffee.getPrice().intValue() : 0;
+        OrderItem item = new OrderItem(order, coffee, quantity, priceAtPurchase);
 
-        OrderItem item = new OrderItem(order, coffee, quantity, (int) coffee.getPrice());
         order.getItems().add(item);
 
         orderRepository.save(order);
     }
 
     public List<Order> getOrdersByUsername(String username) {
-        User user = userRepository.findByUsername(username).orElse(null);
         return orderRepository.findByUserUsername(username);
     }
-
-
 }

@@ -1,6 +1,5 @@
 package cz.project_storage.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -12,11 +11,18 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    @JsonBackReference
     private Order order;
 
+    // Historical rows use COFFEE_ID -> legacy COFFEE table. Keep this association
+    // read-only so existing invoices and order history remain accessible.
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "coffee_id")
+    @JoinColumn(name = "coffee_id", insertable = false, updatable = false)
+    private LegacyCoffee legacyCoffee;
+
+    // New React orders use COFFEES, not the legacy COFFEE table.
+    // Hibernate adds this nullable column without changing old COFFEE_ID values.
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "shop_coffee_id", foreignKey = @ForeignKey(name = "FK_ORDER_ITEM_SHOP_COFFEE"))
     private Coffee coffee;
 
     private Integer quantity;
@@ -33,12 +39,22 @@ public class OrderItem {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
     public Order getOrder() { return order; }
     public void setOrder(Order order) { this.order = order; }
+
     public Coffee getCoffee() { return coffee; }
+    public String getDisplayCoffeeName() {
+        if (coffee != null) return coffee.getName();
+        if (legacyCoffee != null) return legacyCoffee.getName();
+        return "Neznámá káva";
+    }
+    public Integer getDisplayUnitPrice() { return priceAtPurchase; }
     public void setCoffee(Coffee coffee) { this.coffee = coffee; }
+
     public Integer getQuantity() { return quantity; }
     public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
     public Integer getPriceAtPurchase() { return priceAtPurchase; }
     public void setPriceAtPurchase(Integer priceAtPurchase) { this.priceAtPurchase = priceAtPurchase; }
 }

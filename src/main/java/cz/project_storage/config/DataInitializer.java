@@ -11,6 +11,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Component
@@ -54,14 +55,14 @@ public class DataInitializer implements CommandLineRunner {
 
             Coffee c1 = new Coffee();
             c1.setName("Panama Geisha");
-            c1.setPrice(550.0);
+            c1.setPrice(BigDecimal.valueOf(550.0));
             c1.setQuantity(15);
             c1.setRoastery(defaultRoastery);
             c1.setStockStatus("In Stock");
 
             Coffee c2 = new Coffee();
             c2.setName("Ethiopia Yirgacheffe");
-            c2.setPrice(320.0);
+            c2.setPrice(BigDecimal.valueOf(320.0));
             c2.setQuantity(20);
             c2.setRoastery(defaultRoastery);
             c2.setStockStatus("In Stock");

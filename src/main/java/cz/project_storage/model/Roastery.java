@@ -1,6 +1,5 @@
 package cz.project_storage.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -13,24 +12,13 @@ public class Roastery {
 
     private String name;
     private String country;
-
-    @Column(length = 500)
     private String address;
-
-    @Column(length = 1000)
     private String website;
 
     @OneToMany(mappedBy = "roastery", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<Coffee> coffees;
 
     public Roastery() {
-    }
-
-    public Roastery(String name, String country, String website) {
-        this.name = name;
-        this.country = country;
-        this.website = website;
     }
 
     public Roastery(Long id, String name, String country, String address, String website) {
@@ -40,6 +28,7 @@ public class Roastery {
         this.address = address;
         this.website = website;
     }
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
