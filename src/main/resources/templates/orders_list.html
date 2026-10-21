@@ -3,6 +3,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>My Orders | Coffee Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
@@ -22,6 +23,11 @@
         .back-btn { transition: transform 0.2s; }
         .back-btn:hover { transform: translateX(-3px); }
         .btn-action { padding: 0.25rem 0.5rem; font-size: 0.8rem; }
+        @media (max-width: 767px) {
+            .container { padding-left: 10px; padding-right: 10px; }
+            .table-responsive { overflow-x: auto; }
+            .table { min-width: 850px; }
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -53,11 +59,7 @@
                         <span class="fs-4 me-2">📑</span>
                         <h3 class="mb-0">Order History</h3>
                     </div>
-                    <div>
-                        <a th:href="@{/coffee/all}" class="btn btn-outline-info btn-sm back-btn">
-                            ← Back to Inventory
-                        </a>
-                    </div>
+
                 </div>
 
                 <div class="card-body p-0">
@@ -114,6 +116,16 @@
                                           th:classappend="${o.status == 'COMPLETED' ? 'bg-success text-white' : 'bg-warning text-dark'}"
                                           class="badge badge-status">
                                     </span>
+                                    <form sec:authorize="hasRole('ADMIN')"
+                                          th:if="${o.status == 'PENDING'}"
+                                          th:action="@{/orders/status/{id}(id=${o.id})}"
+                                          method="post" class="mt-2">
+                                        <input type="hidden" name="status" value="COMPLETED">
+                                        <button type="submit" class="btn btn-sm btn-success"
+                                                onclick="return confirm('Označit objednávku jako dokončenou?')">
+                                            ✓ Dokončit
+                                        </button>
+                                    </form>
                                 </td>
 
                                 <td class="text-muted">
@@ -156,9 +168,7 @@
                 </div>
 
                 <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center">
-                    <a th:href="@{/menu}" class="btn btn-secondary btn-sm shadow-sm px-3">
-                        🏠 Main Menu
-                    </a>
+
 
                     <div class="text-muted small" sec:authorize="isAuthenticated()">
                         Logged in as:

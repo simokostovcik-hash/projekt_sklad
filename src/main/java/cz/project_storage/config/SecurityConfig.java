@@ -20,7 +20,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**", "/api/orders")
+                        .ignoringRequestMatchers("/h2-console/**", "/api/orders", "/api/payments/demo/complete")
                 )
 
                 .headers(headers -> headers
@@ -46,8 +46,10 @@ public class SecurityConfig {
                                 "/api/coffees/**"
                         ).permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/orders", "/api/payments/demo/complete").permitAll()
                         .requestMatchers("/api/**").denyAll()
+
+                        .requestMatchers(HttpMethod.POST, "/orders/status/**").hasRole("ADMIN")
 
                         .requestMatchers("/admin/**")
                         .hasRole("ADMIN")

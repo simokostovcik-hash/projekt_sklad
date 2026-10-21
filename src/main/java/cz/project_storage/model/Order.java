@@ -15,6 +15,10 @@ public class Order {
 
     private LocalDateTime orderDate;
     private String status;
+    @Column(length = 80)
+    private String paymentToken;
+    public String getPaymentToken() { return paymentToken; }
+    public void setPaymentToken(String token) { this.paymentToken = token; }
     private Double totalPrice;
     private String customerName;
     private String customerEmail;

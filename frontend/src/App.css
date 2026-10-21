@@ -1062,3 +1062,13 @@ p {
         animation: none !important;
     }
 }
+
+/* Testovací platební brána */
+.demo-payment-page { min-height: 100dvh; display:flex; align-items:center; justify-content:center; padding:20px; background:#f7f3ed; color:#30251e; }
+.demo-payment-card { width:100%; max-width:470px; padding:clamp(22px,5vw,42px); border-radius:22px; background:#fff; box-shadow:0 12px 36px #30251e20; text-align:center; }
+.demo-payment-label { font-size:12px; letter-spacing:2px; }
+.demo-payment-card h1 { font-size:clamp(26px,5vw,36px); margin:18px 0; }
+.demo-payment-amount { display:block; font-size:36px; margin:22px 0; }
+.demo-payment-warning { background:#fff4d6; padding:12px; border-radius:10px; font-size:14px; }
+.demo-payment-card .checkout-btn { width:100%; margin-top:18px; min-height:52px; }
+.demo-payment-back { display:block; margin:20px auto 0; padding:10px; background:none; border:0; text-decoration:underline; cursor:pointer; }

@@ -13,7 +13,7 @@ import {
  Trash2,
  X
 } from 'lucide-react';
-import { getCoffees, submitOrder } from './api/coffeeApi';
+import { getCoffees, submitOrder, completeDemoPayment } from './api/coffeeApi';
 import './App.css';
 
 const fallback =
@@ -45,6 +45,10 @@ export default function App() {
  const [drawer, setDrawer] = useState(false);
  const [menu, setMenu] = useState(false);
  const [checkout, setCheckout] = useState(false);
+ const [payment, setPayment] = useState(null);
+ const [paymentBusy, setPaymentBusy] = useState(false);
+ const [paymentError, setPaymentError] = useState('');
+ const [paymentResult, setPaymentResult] = useState(null);
 
  const [busy, setBusy] = useState(false);
  const [notice, setNotice] = useState('');
@@ -226,9 +230,10 @@ export default function App() {
    });
 
    // Objednávka byla úspěšně vytvořena.
-   setNotice(
-       `Objednávka #${result.orderId} byla úspěšně přijata.`
-   );
+   setPayment({orderId: result.orderId, paymentToken: result.paymentToken,
+     amount: total, email: customer.email});
+   setPaymentResult(null);
+   setPaymentError('');
 
    setCart([]);
    setCheckout(false);
@@ -252,6 +257,48 @@ export default function App() {
   }
  }
 
+ if (payment) {
+  async function payNow() {
+   if (paymentBusy) return;
+   setPaymentBusy(true);
+   setPaymentError('');
+   try {
+    const result = await completeDemoPayment(payment.orderId, payment.paymentToken);
+    setPaymentResult(result);
+   } catch (err) {
+    setPaymentError(err.message);
+   } finally {
+    setPaymentBusy(false);
+   }
+  }
+  return (
+   <main className="demo-payment-page">
+    <section className="demo-payment-card">
+     <p className="demo-payment-label">KÁVOVÝ SKLAD · TESTOVACÍ PLATBA</p>
+     <h1>{paymentResult ? 'Objednávka dokončena' : 'Platební brána'}</h1>
+     <p>Objednávka #{payment.orderId}</p>
+     <strong className="demo-payment-amount">{money(payment.amount)}</strong>
+     <p>Potvrzení pro: {payment.email}</p>
+     <p className="demo-payment-warning">DEMO – žádné skutečné peníze se nepřevádějí.</p>
+     {paymentResult ? (
+      <p role="status">✓ Stav COMPLETED. {paymentResult.emailSent
+        ? 'Potvrzovací e-mail byl odeslán.'
+        : 'E-mail nebyl odeslán. Zkontrolujte nastavení SMTP.'}</p>
+     ) : (
+      <>
+       {paymentError && <p role="alert" className="form-error">{paymentError}</p>}
+       <button className="checkout-btn" disabled={paymentBusy} onClick={payNow}>
+        {paymentBusy ? 'Zpracovávám…' : 'Potvrdit testovací platbu'}
+       </button>
+      </>
+     )}
+     <button className="demo-payment-back" onClick={() => {setPayment(null);setPaymentResult(null);}}>
+      Zpět do obchodu
+     </button>
+    </section>
+   </main>
+  );
+ }
  return (
      <div className="site" id="nahoru">
       {/* HLAVIČKA */}

@@ -38,6 +38,7 @@ public class ShopOrderApiController {
                 quantities.merge(item.coffeeId(),item.quantity(),Integer::sum);
             }
             Order order = new Order();
+            order.setPaymentToken(UUID.randomUUID().toString());
             order.setCustomerName(c.name().trim()); order.setCustomerEmail(c.email().trim()); order.setCustomerPhone(c.phone().trim());
             order.setDeliveryAddress(c.address().trim()); order.setDeliveryCity(c.city().trim()); order.setDeliveryPostalCode(c.postalCode().trim()); order.setCustomerNote(c.note());
             BigDecimal total = BigDecimal.ZERO;
@@ -57,7 +58,7 @@ public class ShopOrderApiController {
             // Flush within the transaction so database constraint errors surface
             // before the API reports a successful order.
             orders.saveAndFlush(order);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("orderId",order.getId()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("orderId",order.getId(), "paymentToken",order.getPaymentToken()));
     }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> invalid(IllegalArgumentException ex) {
