@@ -40,7 +40,6 @@ public class TestCatalogSeeder implements CommandLineRunner {
 
         Set<String> existingNames = coffees.findAll().stream().map(Coffee::getName).collect(Collectors.toSet());
         int added = 0;
-        // Product name, roastery, type, quantity, price CZK, stock status.
         Object[][] catalog = {
             {"Ethiopia Guji Natural", "Nordbeans", "Arabica", 42, "349.00", "In Stock"},
             {"Colombia Huila Washed", "Nordbeans", "Arabica", 25, "329.00", "In Stock"},
@@ -78,7 +77,7 @@ public class TestCatalogSeeder implements CommandLineRunner {
             coffee.setQuantity((Integer) item[3]);
             coffee.setPrice(new BigDecimal((String) item[4]));
             coffee.setStockStatus((String) item[5]);
-            coffee.setVisibleInShop(false); // Demo products do not automatically appear in the public shop.
+            coffee.setVisibleInShop(false);
             coffees.save(coffee);
             added++;
         }

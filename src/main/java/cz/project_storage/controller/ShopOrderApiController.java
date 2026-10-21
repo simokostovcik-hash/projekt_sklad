@@ -55,8 +55,6 @@ public class ShopOrderApiController {
                 order.addOrderItem(new OrderItem(order,coffee,qty,price.intValue()));
             }
             order.setTotalPrice(total.doubleValue());
-            // Flush within the transaction so database constraint errors surface
-            // before the API reports a successful order.
             orders.saveAndFlush(order);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("orderId",order.getId(), "paymentToken",order.getPaymentToken()));
     }

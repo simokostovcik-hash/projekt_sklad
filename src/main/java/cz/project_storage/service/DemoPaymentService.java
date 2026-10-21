@@ -18,7 +18,7 @@ public class DemoPaymentService {
         if (!"PENDING".equals(order.getStatus()))
             throw new IllegalArgumentException("Objednávka již není ve stavu PENDING.");
         order.setStatus("COMPLETED");
-        order.setPaymentToken(null); // token nelze použít znovu
+        order.setPaymentToken(null);
         return orders.save(order);
     }
 
