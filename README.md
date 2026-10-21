@@ -1,29 +1,31 @@
 # Coffee Shop – Inventory Management & E-Commerce System
 
-A full-stack coffee management and e-commerce application built with **Spring Boot, React, and H2 Database**.
+A full-stack coffee inventory management and e-commerce application built with **Spring Boot, React, and MySQL**.
 
-The project combines a warehouse and inventory management system with a modern customer-facing coffee shop. Administrators can manage coffee products, roasteries, inventory, users, and orders, while customers can browse coffee products and place orders through a React frontend.
+The project combines warehouse management with a customer-facing online coffee shop. Administrators can manage coffee products, stock levels, roasteries, users, and orders, while customers can browse products, add them to a shopping cart, and place orders through the React frontend.
 
 ## Key Features
 
 ### Coffee Shop – React Frontend
 
-- **Modern E-Commerce Interface** – Responsive coffee shop built with React and Vite.
-- **Coffee Product Catalog** – Browse available coffee products and view product information.
-- **Shopping Cart** – Select coffee products and manage items before checkout.
-- **Order Placement** – Submit customer orders through the Spring Boot REST API.
-- **Backend Integration** – React communicates with the Java backend using HTTP requests.
+- **Responsive E-Commerce Interface** – Online coffee shop built with React and Vite.
+- **Coffee Product Catalog** – Browse coffee products with descriptions, prices, and images.
+- **Shopping Cart** – Add products, adjust quantities, and review orders before checkout.
+- **Customer Checkout** – Submit orders with customer and delivery information.
+- **REST API Integration** – Communicate with the Spring Boot backend using HTTP requests.
 
 ### Administration & Inventory Management
 
-- **Inventory Tracking** – Manage coffee varieties, stock quantities, prices, and availability.
-- **Roastery Management** – Manage partner roasteries and their information.
-- **Order Management** – View and process orders from the coffee shop.
-- **Role-Based Access Control** – Secure access using Spring Security.
-- **Admin Dashboard** – Overview of important warehouse and business information.
-- **Filtering and Sorting** – Browse and organize inventory records.
+- **Coffee Inventory** – Manage coffee varieties, prices, stock quantities, and availability.
+- **Shop Visibility** – Control which coffee products appear in the online store.
+- **Roastery Management** – Manage coffee roasteries.
+- **Order Management** – View customer orders, purchased items, totals, and order statuses.
+- **Customer Information** – Display customer names from submitted orders.
+- **PDF Invoices** – Generate PDF documents for orders.
+- **Role-Based Access Control** – Authentication and authorization using Spring Security.
+- **Admin Dashboard** – Overview of inventory and business information.
+- **Coffee Tags** – Categorize coffee products using tags.
 - **Audit Logging** – Record administrative activities.
-- **Data Initialization** – Support for populating the database with initial data.
 
 ## Tech Stack
 
@@ -31,43 +33,48 @@ The project combines a warehouse and inventory management system with a modern c
 |---|---|
 | Backend | Java, Spring Boot, Spring Security |
 | REST API | Spring Web |
-| Database | H2 Database |
+| Database | MySQL |
 | Persistence | Spring Data JPA, Hibernate |
 | Customer Frontend | React, Vite, JavaScript |
-| Admin Frontend | Thymeleaf, HTML, CSS, JavaScript |
+| Admin Frontend | Thymeleaf, HTML, CSS, Bootstrap |
 | Build Tools | Maven, npm |
+| Database Administration | MySQL Workbench |
 
 ## Project Structure
 
 ```text
 projekt_sklad/
-├── frontend/                       # React customer e-shop
-│   ├── public/                     # Static assets
+├── frontend/                         # React customer e-shop
+│   ├── public/
 │   ├── src/
-│   │   ├── api/                    # Backend API communication
-│   │   ├── assets/                 # Images and other assets
-│   │   ├── App.jsx                 # Main React application
-│   │   ├── App.css                 # Application styles
-│   │   └── main.jsx                # React entry point
+│   │   ├── api/                      # Backend API communication
+│   │   ├── assets/
+│   │   ├── App.jsx
+│   │   ├── App.css
+│   │   └── main.jsx
 │   ├── package.json
 │   └── vite.config.js
+│
+├── mysql/
+│   ├── 01_sjednotit_coffee.sql       # Coffee table consolidation
+│   └── 02_volitelne_odstraneni_archivu.sql
 │
 ├── src/
 │   └── main/
 │       ├── java/cz/project_storage/
-│       │   ├── config/             # Application configuration
-│       │   ├── controller/         # Web and REST controllers
-│       │   ├── model/              # JPA entities
-│       │   ├── repository/         # Database access
-│       │   └── service/            # Business logic
+│       │   ├── config/
+│       │   ├── controller/
+│       │   ├── model/
+│       │   ├── repository/
+│       │   └── service/
 │       │
 │       └── resources/
-│           ├── templates/         # Thymeleaf admin pages
-│           ├── static/            # CSS and static resources
-│           └── application.properties
+│           ├── templates/           # Thymeleaf administration
+│           ├── static/              # CSS and static resources
+│           ├── application.properties
+│           └── application-mysql.properties
 │
-├── data/                           # Local H2 database files
-├── pom.xml                         # Maven configuration
+├── pom.xml
 └── README.md
 ```
 
@@ -75,12 +82,15 @@ projekt_sklad/
 
 ### Prerequisites
 
-Before running the project, install:
+Before running the application, install:
 
-- **Java JDK 21+** (use the version configured in `pom.xml`)
-- **Maven** or the project's Maven wrapper, if available
-- **Node.js and npm**
-- **Git**
+- **Java JDK 17 or newer** (the current Maven build targets Java 17).
+- **MySQL Server** and optionally MySQL Workbench.
+- **Node.js and npm**.
+- **IntelliJ IDEA** or another Java IDE.
+- **Git**.
+
+Maven can be run through IntelliJ IDEA's integrated Maven tool window.
 
 ### 1. Clone the Repository
 
@@ -89,23 +99,48 @@ git clone https://github.com/simokostovcik-hash/projekt_sklad.git
 cd projekt_sklad
 ```
 
-### 2. Start the Spring Boot Backend
+### 2. Configure MySQL
 
-Open a terminal in the project root and run:
+The application uses MySQL for persistent storage.
+
+The development database used during the migration is:
+
+```text
+projekt_sklad_migrace
+```
+
+Review the database connection settings in:
+
+```text
+src/main/resources/application.properties
+src/main/resources/application-mysql.properties
+```
+
+Configure the database URL, username, and password for your local MySQL installation.
+
+The repository also includes SQL scripts in `mysql/` for database consolidation. These scripts document schema changes and should not be executed blindly against an existing database.
+
+**Important:** The repository does not automatically provide a populated MySQL database. A compatible schema and required data must be available before starting the application.
+
+### 3. Start the Spring Boot Backend
+
+Open the project in IntelliJ IDEA and run the Spring Boot application.
+
+Alternatively, if Maven is installed and available in your terminal:
 
 ```bash
 mvn spring-boot:run
 ```
 
-The backend runs at:
+Backend URL:
 
 **http://localhost:8080**
 
-The Spring Boot application provides the administration interface, database access, and REST API used by the React frontend.
+The backend provides the administration interface, database access, and REST API for the React frontend.
 
-### 3. Start the React Frontend
+### 4. Start the React Frontend
 
-Open a second terminal and run:
+Open a second terminal:
 
 ```bash
 cd frontend
@@ -113,62 +148,113 @@ npm install
 npm run dev
 ```
 
-The React coffee shop is available at:
+Customer e-shop URL:
 
 **http://localhost:5173**
 
-> Both the Spring Boot backend and React frontend must be running for the complete application to work locally.
+Both applications must be running for the complete local e-commerce workflow.
 
 ## Application Interfaces
 
 | Interface | URL | Description |
 |---|---|---|
-| React Coffee Shop | http://localhost:5173 | Customer-facing e-commerce application |
-| Spring Boot Backend | http://localhost:8080 | Administration and backend services |
+| React Coffee Shop | http://localhost:5173 | Customer-facing online shop |
+| Spring Boot Backend | http://localhost:8080 | Backend application and REST API |
+| Inventory Management | http://localhost:8080/coffee/all | Coffee inventory administration |
+| Order Management | http://localhost:8080/orders/all | Order history and administration |
+| Admin Dashboard | http://localhost:8080/dashboard | Inventory and business overview |
+
+Administrative pages require appropriate authentication and permissions.
 
 ## REST API
 
-The application includes REST controllers for communication between React and Spring Boot.
+The application includes Spring Boot controllers for communication between the frontend and backend.
 
-Main components include:
+Important components:
 
-- `CoffeeApiController` – Coffee product data.
-- `ShopOrderApiController` – Customer order processing.
-- `StorageController` – Warehouse and inventory functionality.
+- `CoffeeApiController` – Provides coffee product data to the React frontend.
+- `ShopOrderApiController` – Handles customer orders submitted from the e-shop.
+- `StorageController` – Handles inventory, order administration, and other server-rendered pages.
 
-These controllers connect the frontend with the application's business logic and database.
+The React frontend communicates with the backend through HTTP requests.
 
-## Database
+## Database Architecture
 
-The project uses **H2 Database** with Spring Data JPA and Hibernate.
+The application uses **MySQL**, **Spring Data JPA**, and **Hibernate**.
 
-Database configuration is located in:
+### Unified Coffee Entity
 
-```text
-src/main/resources/application.properties
-```
+The inventory and e-commerce catalog share a single `Coffee` entity mapped to the `coffee` table.
 
-The project includes a `data/` directory for local database files.
+This avoids maintaining separate coffee product records for the warehouse and online shop.
 
-**Important:** Existing database files may contain application data. Back them up before resetting, replacing, or deleting the database.
+Important coffee fields include:
+
+- Product name, type, price, and stock quantity.
+- Description and image URL.
+- Roast date.
+- Shop visibility (`VISIBLE_IN_SHOP`).
+- Roastery and tag relationships.
+
+### Orders
+
+Customer orders are stored in the `orders` table, with purchased products recorded in `order_item`.
+
+The application supports:
+
+- Customer names and contact details.
+- Delivery information.
+- Order status and total amount.
+- Multiple purchased items.
+- References to coffee products.
+- Stored purchase prices for order items.
+
+Historical order information should be preserved when coffee product prices or visibility change.
+
+### Database Migration Scripts
+
+The `mysql/` directory contains:
+
+| Script | Purpose |
+|---|---|
+| `01_sjednotit_coffee.sql` | Consolidation of coffee data and related database structures |
+| `02_volitelne_odstraneni_archivu.sql` | Optional cleanup of archived database structures |
+
+**Do not rerun migration or cleanup scripts on an existing database without reviewing their contents and current schema.**
+
+Hibernate schema validation is used in the development configuration, so the database schema must match the Java entity mappings.
 
 ## Security
 
-Spring Security provides authentication and role-based authorization for the administration interface.
+Spring Security provides authentication and role-based access control.
 
-The application supports administrative functionality for managing inventory, roasteries, and orders, with access restrictions based on user roles.
+Administrative features are restricted according to user permissions. Customer-facing ordering is handled through the shop's REST API.
 
-For security reasons, production credentials should be configured separately and should not be committed to the repository.
+Database passwords, API keys, and other credentials should not be committed to GitHub. Use appropriate environment-specific configuration for deployment.
 
 ## Development
 
-### Backend
+### Backend Build
+
+In IntelliJ IDEA:
+
+```text
+Maven → projekt_sklad → Lifecycle → compile
+```
+
+Alternatively:
+
+```bash
+mvn compile
+```
+
+### Run Backend
 
 ```bash
 mvn spring-boot:run
 ```
 
-### Frontend
+### Run Frontend
 
 ```bash
 cd frontend
@@ -182,18 +268,29 @@ cd frontend
 npm run build
 ```
 
-## Project Documentation
+## Current Development Status
 
-Additional documentation and development notes are available in the repository, including:
+The project includes:
 
-- `FRONTEND_ZMENY.md`
-- `NAVOD_K_PROJEKTU.md`
-- `NAVOD_OPRAVY.md`
-- `OPRAVA_OBJEDNAVEK.md`
-- `UPRAVY_README.md`
+- A unified coffee inventory and shop product model.
+- MySQL-backed persistence.
+- A React customer storefront.
+- Customer checkout and order submission.
+- Thymeleaf-based inventory and order administration.
+- Customer information displayed in the order list.
+- PDF invoice generation.
+- Database migration scripts.
+
+The Java backend has been successfully compiled using Maven.
 
 ## Repository
 
 **GitHub:** https://github.com/simokostovcik-hash/projekt_sklad
 
-The `main` branch contains the current version of the Spring Boot inventory management system and React Coffee Shop frontend.
+**Primary branch:** `main`
+
+**Key development commit:** `0af2afb` – `44. Unification of Coffee entity and fixing orders`
+
+The `main` branch contains the current Spring Boot inventory management system and React Coffee Shop frontend.
+
+**Note:** Git stores project source code and tracked files, not the live contents of the MySQL database.
