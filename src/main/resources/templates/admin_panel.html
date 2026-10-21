@@ -1,121 +1,518 @@
 
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="cs"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
   <meta charset="UTF-8">
-  <title>Admin Panel | System Management</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Správa systému | Kávový sklad</title>
+
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
   <link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
+
   <style>
-    .table-responsive { max-height: 500px; overflow-y: auto; }
-    .sticky-top { top: 0; z-index: 1020; background-color: white !important; }
+    body {
+      background: #f8f5ef !important;
+      color: #30251e;
+    }
+
+    .page-container {
+      padding-top: 30px;
+      padding-bottom: 40px;
+    }
+
+    .section-card {
+      border: none;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .section-card .card-header {
+      background: #30251e !important;
+      color: white;
+      padding: 16px 20px;
+    }
+
+    .section-card .card-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .user-role-form {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .user-role-form select {
+      width: auto;
+      min-width: 90px;
+    }
+
+    .user-role-form button {
+      white-space: nowrap;
+    }
+
+    .audit-scroll {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .audit-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: white;
+    }
+
+    .audit-table td {
+      overflow-wrap: anywhere;
+    }
+
+    .mobile-label {
+      display: none;
+    }
+
+    .empty-message {
+      text-align: center;
+      padding: 35px 15px !important;
+      color: #81766e;
+    }
+
+    /* TABLETY */
+    @media (max-width: 991.98px) {
+      .page-container {
+        padding-top: 22px;
+      }
+
+      .section-card {
+        margin-bottom: 20px;
+      }
+
+      .page-title {
+        font-size: 25px;
+      }
+    }
+
+    /* TELEFONY */
+    @media (max-width: 767.98px) {
+      .page-container {
+        padding: 18px 12px 30px;
+      }
+
+      .page-title {
+        font-size: 23px;
+        margin-bottom: 18px;
+      }
+
+      .section-card {
+        border-radius: 14px;
+      }
+
+      .section-card .card-header {
+        padding: 14px 16px;
+      }
+
+      .section-card .card-header h2 {
+        font-size: 17px;
+      }
+
+      .mobile-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #81766e;
+        margin-bottom: 4px;
+      }
+
+      /* TABULKA UŽIVATELŮ JAKO KARTY */
+      .users-table,
+      .users-table tbody,
+      .users-table tr,
+      .users-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .users-table thead {
+        display: none;
+      }
+
+      .users-table tbody {
+        padding: 10px;
+      }
+
+      .users-table tbody tr {
+        background: white;
+        border: 1px solid #e6ddd1;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        padding: 12px;
+      }
+
+      .users-table tbody tr:last-child {
+        margin-bottom: 0;
+      }
+
+      .users-table tbody td {
+        border: none;
+        padding: 6px 2px !important;
+        text-align: left !important;
+        overflow-wrap: anywhere;
+      }
+
+      .user-role-form {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+
+      .user-role-form select {
+        flex: 1;
+        min-width: 120px;
+        min-height: 44px;
+        font-size: 16px;
+      }
+
+      .user-role-form button {
+        min-height: 44px;
+        padding: 8px 16px;
+      }
+
+      /* AUDITNÍ ZÁZNAMY JAKO KARTY */
+      .audit-scroll {
+        max-height: 600px;
+        padding: 10px;
+      }
+
+      .audit-table,
+      .audit-table tbody,
+      .audit-table tr,
+      .audit-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .audit-table thead {
+        display: none;
+      }
+
+      .audit-table tbody tr.audit-row {
+        background: white;
+        border: 1px solid #e6ddd1;
+        border-radius: 12px;
+        margin-bottom: 10px;
+        padding: 12px;
+      }
+
+      .audit-table tbody tr.audit-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .audit-table tbody tr.audit-row td {
+        border: none;
+        padding: 5px 2px !important;
+        white-space: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .audit-table tbody tr.audit-row td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 12px;
+        font-weight: 700;
+        color: #81766e;
+        margin-bottom: 3px;
+      }
+
+      .audit-table tbody tr.empty-row td {
+        display: block;
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .page-container {
+        padding-left: 8px;
+        padding-right: 8px;
+      }
+
+      .user-role-form select {
+        min-width: 100%;
+      }
+
+      .user-role-form button {
+        width: 100%;
+      }
+    }
   </style>
 </head>
-<body class="bg-light">
+
+<body>
+
 <nav class="navbar navbar-expand-lg coffee-nav">
   <div class="container-fluid px-4">
-    <a class="navbar-brand" th:href="@{/menu}">☕ KÁVOVÝ SKLAD</a>
+
+    <a class="navbar-brand" th:href="@{/menu}">
+      ☕ KÁVOVÝ SKLAD
+    </a>
+
     <div class="d-flex flex-wrap gap-2 align-items-center">
-      <a th:href="@{/menu}" class="nav-link">Úvod</a>
-      <a th:href="@{/coffee/all}" class="nav-link">Káva</a>
-      <a th:href="@{/orders/all}" class="nav-link">Objednávky</a>
-      <a sec:authorize="hasRole('ADMIN')" th:href="@{/dashboard}" class="nav-link">Dashboard</a>
-      <a sec:authorize="hasRole('ADMIN')" th:href="@{/roasteries}" class="nav-link">Pražírny</a>
-      <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}" class="nav-link">Správa</a>
+
+      <a th:href="@{/menu}" class="nav-link">
+        Úvod
+      </a>
+
+      <a th:href="@{/coffee/all}" class="nav-link">
+        Káva
+      </a>
+
+      <a th:href="@{/orders/all}" class="nav-link">
+        Objednávky
+      </a>
+
+      <a sec:authorize="hasRole('ADMIN')"
+         th:href="@{/dashboard}"
+         class="nav-link">
+        Dashboard
+      </a>
+
+      <a sec:authorize="hasRole('ADMIN')"
+         th:href="@{/roasteries}"
+         class="nav-link">
+        Pražírny
+      </a>
+
+      <a sec:authorize="hasRole('ADMIN')"
+         th:href="@{/admin/users}"
+         class="nav-link">
+        Správa
+      </a>
+
       <form th:action="@{/logout}" method="post">
-        <button class="btn btn-sm btn-outline-light" type="submit">Odhlásit</button>
+        <button
+                class="btn btn-sm btn-outline-light"
+                type="submit">
+          Odhlásit
+        </button>
       </form>
+
     </div>
   </div>
 </nav>
 
-<div class="container">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3">System Administration</h1>
-    <div class="btn-group shadow-sm">
-      <a th:href="@{/coffee/all}" class="btn btn-primary">Inventory</a>
-      <a th:href="@{/roasteries}" class="btn btn-info">Roasteries</a>
-      <a th:href="@{/menu}" class="btn btn-outline-secondary">Main Menu</a>
-    </div>
-  </div>
+<main class="container page-container">
+
+  <h1 class="page-title">
+    ⚙️ Správa systému
+  </h1>
 
   <div class="row">
+
     <div class="col-lg-5">
-      <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-primary text-white py-3">
-          <h5 class="mb-0">User Management</h5>
+
+      <div class="card shadow-sm section-card">
+
+        <div class="card-header">
+          <h2>👥 Správa uživatelů</h2>
         </div>
+
         <div class="card-body p-0">
-          <table class="table table-hover align-middle mb-0">
+
+          <table class="table table-hover align-middle mb-0 users-table">
+
             <thead class="table-light">
             <tr>
-              <th class="ps-3">Username</th>
+              <th class="ps-3">Uživatel</th>
               <th>Role</th>
-              <th class="text-end pe-3">Action</th>
+              <th class="text-end pe-3">Akce</th>
             </tr>
             </thead>
+
             <tbody>
+
             <tr th:each="u : ${users}">
-              <td class="ps-3 fw-bold" th:text="${u.username}"></td>
-              <td>
-                                <span class="badge"
-                                      th:classappend="${u.role == 'ROLE_ADMIN' ? 'bg-danger' : 'bg-info text-dark'}"
-                                      th:text="${u.role}"></span>
+
+              <td class="ps-3 fw-bold">
+
+                                <span class="mobile-label">
+                                    Uživatel
+                                </span>
+
+                <span th:text="${u.username}">
+                                    username
+                                </span>
+
               </td>
+
+              <td>
+
+                                <span class="mobile-label">
+                                    Aktuální role
+                                </span>
+
+                <span
+                        class="badge"
+                        th:classappend="${u.role == 'ROLE_ADMIN' ? 'bg-danger' : 'bg-info text-dark'}"
+                        th:text="${u.role}">
+                                    ROLE_USER
+                                </span>
+
+              </td>
+
               <td class="text-end pe-3">
-                <form th:action="@{/admin/user/update-role}" method="post" class="d-flex justify-content-end gap-1">
-                  <input type="hidden" name="userId" th:value="${u.id}" />
-                  <select name="newRole" class="form-select form-select-sm" style="width: auto;">
-                    <option value="ROLE_USER" th:selected="${u.role == 'ROLE_USER'}">USER</option>
-                    <option value="ROLE_ADMIN" th:selected="${u.role == 'ROLE_ADMIN'}">ADMIN</option>
+
+                                <span class="mobile-label">
+                                    Změnit roli
+                                </span>
+
+                <form
+                        th:action="@{/admin/user/update-role}"
+                        method="post"
+                        class="user-role-form">
+
+                  <input
+                          type="hidden"
+                          name="userId"
+                          th:value="${u.id}">
+
+                  <select
+                          name="newRole"
+                          class="form-select form-select-sm"
+                          th:attr="aria-label=${'Nová role uživatele ' + u.username}">
+
+                    <option
+                            value="ROLE_USER"
+                            th:selected="${u.role == 'ROLE_USER'}">
+                      USER
+                    </option>
+
+                    <option
+                            value="ROLE_ADMIN"
+                            th:selected="${u.role == 'ROLE_ADMIN'}">
+                      ADMIN
+                    </option>
+
                   </select>
-                  <button type="submit" class="btn btn-sm btn-dark">Update</button>
+
+                  <button
+                          type="submit"
+                          class="btn btn-sm btn-dark">
+                    Uložit
+                  </button>
+
                 </form>
+
+              </td>
+
+            </tr>
+
+            <tr th:if="${users == null or #lists.isEmpty(users)}">
+              <td colspan="3" class="empty-message">
+                Žádní uživatelé k zobrazení.
               </td>
             </tr>
+
             </tbody>
           </table>
+
         </div>
       </div>
+
     </div>
 
     <div class="col-lg-7">
-      <div class="card shadow-sm border-0">
-        <div class="card-header bg-dark text-white py-3">
-          <h5 class="mb-0">System Audit Log</h5>
+
+      <div class="card shadow-sm section-card">
+
+        <div class="card-header">
+          <h2>📋 Historie změn v systému</h2>
         </div>
+
         <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-sm table-striped hover mb-0">
-              <thead class="sticky-top border-bottom shadow-sm">
+
+          <div class="audit-scroll">
+
+            <table class="table table-sm table-striped mb-0 audit-table">
+
+              <thead class="border-bottom shadow-sm">
               <tr>
-                <th class="ps-3 py-2">Timestamp</th>
-                <th class="py-2">User</th>
-                <th class="py-2 pe-3">Action Details</th>
+                <th class="ps-3 py-2">
+                  Datum a čas
+                </th>
+
+                <th class="py-2">
+                  Uživatel
+                </th>
+
+                <th class="py-2 pe-3">
+                  Popis akce
+                </th>
               </tr>
               </thead>
+
               <tbody>
-              <tr th:each="log : ${auditLogs}">
-                <td class="ps-3" th:text="${log.timestamp != null ? #temporals.format(log.timestamp, 'dd.MM.yyyy HH:mm:ss') : '---'}"></td>
-                <td th:text="${log.user}"></td>
-                <td th:text="${log.action}"></td>
-              </tr>
-              <tr th:if="${auditLogs == null or #lists.isEmpty(auditLogs)}">
-                <td colspan="3" class="text-center py-5 text-muted">
-                  <p class="mb-0">No activity recorded in the audit log.</p>
+
+              <tr th:each="log : ${auditLogs}"
+                  class="audit-row">
+
+                <td
+                        data-label="Datum a čas"
+                        class="ps-3"
+                        th:text="${log.timestamp != null ? #temporals.format(log.timestamp, 'dd.MM.yyyy HH:mm:ss') : '---'}">
                 </td>
+
+                <td
+                        data-label="Uživatel"
+                        th:text="${log.user}">
+                </td>
+
+                <td
+                        data-label="Popis akce"
+                        th:text="${log.action}">
+                </td>
+
               </tr>
+
+              <tr
+                      th:if="${auditLogs == null or #lists.isEmpty(auditLogs)}"
+                      class="empty-row">
+
+                <td colspan="3" class="empty-message">
+                  Zatím nejsou zaznamenány žádné změny.
+                </td>
+
+              </tr>
+
               </tbody>
+
             </table>
+
           </div>
+
         </div>
       </div>
-    </div>
-  </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </div>
+
+  </div>
+
+</main>
+
 </body>
 </html>
-np

@@ -38,10 +38,8 @@ public class SecurityConfig {
                                 "/js/**"
                         ).permitAll()
 
-                        // H2 Console - pouze pro lokální vývoj
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // Veřejný katalog káv
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/coffees",

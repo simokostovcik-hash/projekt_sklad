@@ -1,187 +1,531 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Správa káv | Coffee Minimal</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
+
     <style>
         .container-fluid { padding: 0 30px; }
         .d-none-filtered { display: none !important; }
         .card-header h3 { font-size: 1.15rem; }
         .table-sm-text { font-size: 0.85rem; }
-        .filter-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6c757d; margin-bottom: 5px; display: block; }
-        .sort-btn { cursor: pointer; border: none; background: none; padding: 0 5px; color: #adb5bd; transition: color 0.2s; font-style: normal; }
+        .filter-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .sort-btn {
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0 5px;
+            color: #adb5bd;
+            transition: color 0.2s;
+            font-style: normal;
+        }
         .sort-btn:hover { color: #0d6efd; }
         th { white-space: nowrap; }
-        .range-value { font-weight: bold; color: #0d6efd; float: right; }
+        .range-value {
+            font-weight: bold;
+            color: #0d6efd;
+            float: right;
+        }
         .tag-badge { font-size: 0.7rem; margin-right: 2px; }
         .tags-container { margin-top: 4px; }
         .low-stock { background-color: #fff3f3 !important; }
-        .out-of-stock { background-color: #f8f9fa !important; color: #adb5bd; }
-        body { background: #f8f5ef !important; color: #30251e; }
+        .out-of-stock {
+            background-color: #f8f9fa !important;
+            color: #adb5bd;
+        }
+
+        body {
+            background: #f8f5ef !important;
+            color: #30251e;
+        }
+
         .card { border-radius: 18px; overflow: hidden; }
-        .card-header.bg-primary, .card-header.bg-dark { background: #30251e !important; }
-        .btn-success, .btn-primary { background: #30251e; border-color: #30251e; }
-        .btn-success:hover, .btn-primary:hover { background: #a17b58; border-color: #a17b58; }
-        .product-thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 10px; margin-right: 10px; }
-        .shop-preview { width: 100%; max-height: 170px; object-fit: cover; border-radius: 12px; margin-top: 10px; }
-        .shop-status { font-size: .75rem; font-weight: 600; }
+
+        .card-header.bg-primary,
+        .card-header.bg-dark {
+            background: #30251e !important;
+        }
+
+        .btn-success,
+        .btn-primary {
+            background: #30251e;
+            border-color: #30251e;
+        }
+
+        .btn-success:hover,
+        .btn-primary:hover {
+            background: #a17b58;
+            border-color: #a17b58;
+        }
+
+        .product-thumb {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-right: 10px;
+        }
+
+        .shop-preview {
+            width: 100%;
+            max-height: 170px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .shop-status {
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        .mobile-coffee-toggle { display: none; }
+
+        @media (max-width: 767.98px) {
+            .container-fluid {
+                padding-left: 12px;
+                padding-right: 12px;
+            }
+
+            .row > [class*="col-md-"] {
+                margin-bottom: 16px;
+            }
+
+            #mainTable,
+            #mainTable tbody,
+            #mainTable tr,
+            #mainTable td {
+                display: block;
+                width: 100%;
+            }
+
+            #mainTable thead { display: none; }
+
+            #mainTable .coffee-row {
+                border: 1px solid #e6ddd1;
+                border-radius: 12px;
+                margin: 10px;
+                padding: 10px;
+                background: #fff;
+            }
+
+            #mainTable .coffee-row td {
+                border: 0;
+                padding: 6px 3px !important;
+                overflow-wrap: anywhere;
+            }
+
+            #mainTable .coffee-row td:first-child {
+                padding-right: 38px !important;
+                position: relative;
+            }
+
+            #mainTable .coffee-row td:not(:first-child) {
+                display: none;
+            }
+
+            #mainTable .coffee-row.mobile-expanded td:not(:first-child) {
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            #mainTable .coffee-row.mobile-expanded td:not(:first-child)::before {
+                content: attr(data-label);
+                font-weight: 600;
+                flex: 0 0 90px;
+            }
+
+            #mainTable .coffee-row.mobile-expanded td:last-child {
+                display: block;
+            }
+
+            #mainTable .coffee-row.mobile-expanded td:last-child::before {
+                display: block;
+                margin-bottom: 8px;
+            }
+
+            #mainTable .coffee-row .btn-group {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+                justify-content: flex-start;
+            }
+
+            .mobile-coffee-toggle {
+                display: inline-flex;
+                position: absolute;
+                right: 2px;
+                top: 3px;
+                border: 1px solid #cbbcae;
+                background: #fff;
+                border-radius: 7px;
+                padding: 4px 8px;
+            }
+
+            .card-header .badge {
+                white-space: normal;
+                text-align: right;
+            }
+        }
     </style>
 </head>
+
 <body class="bg-light">
-<nav class="navbar navbar-expand-lg coffee-nav"><div class="container-fluid px-4"><a class="navbar-brand" th:href="@{/menu}">☕ KÁVOVÝ SKLAD</a><div class="d-flex flex-wrap gap-2 align-items-center"><a th:href="@{/menu}" class="nav-link">Úvod</a><a th:href="@{/coffee/all}" class="nav-link">Káva</a><a th:href="@{/orders/all}" class="nav-link">Objednávky</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/dashboard}" class="nav-link">Dashboard</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/roasteries}" class="nav-link">Pražírny</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}" class="nav-link">Správa</a><form th:action="@{/logout}" method="post"><button class="btn btn-sm btn-outline-light" type="submit">Odhlásit</button></form></div></div></nav>
+
+<nav class="navbar navbar-expand-lg coffee-nav">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" th:href="@{/menu}">
+            ☕ KÁVOVÝ SKLAD
+        </a>
+
+        <div class="d-flex flex-wrap gap-2 align-items-center">
+            <a th:href="@{/menu}" class="nav-link">Úvod</a>
+            <a th:href="@{/coffee/all}" class="nav-link">Káva</a>
+            <a th:href="@{/orders/all}" class="nav-link">Objednávky</a>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               th:href="@{/dashboard}"
+               class="nav-link">Dashboard</a>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               th:href="@{/roasteries}"
+               class="nav-link">Pražírny</a>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               th:href="@{/admin/users}"
+               class="nav-link">Správa</a>
+
+            <form th:action="@{/logout}" method="post">
+                <button class="btn btn-sm btn-outline-light"
+                        type="submit">
+                    Odhlásit
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
 
 <div class="container-fluid mt-5">
     <div class="row">
+
         <div class="col-md-3">
-            <div class="card shadow border-0 mb-4" sec:authorize="hasRole('ADMIN')">
+            <div class="card shadow border-0 mb-4"
+                 sec:authorize="hasRole('ADMIN')">
+
                 <div class="card-header bg-primary text-white p-3">
-                    <h3 class="mb-0" th:text="${coffee.id == null ? '➕ Přidat kávu' : '✏️ Upravit kávu'}"></h3>
+                    <h3 class="mb-0"
+                        th:text="${coffee.id == null ? '➕ Přidat kávu' : '✏️ Upravit kávu'}">
+                    </h3>
                 </div>
+
                 <div class="card-body p-3">
-                    <form th:action="@{/coffee/save}" th:object="${coffee}" method="post">
+                    <form th:action="@{/coffee/save}"
+                          th:object="${coffee}"
+                          method="post">
+
                         <input type="hidden" th:field="*{id}">
+
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">Name:</label>
-                            <input type="text" th:field="*{name}" class="form-control form-control-sm" required>
+                            <label class="form-label small fw-bold">
+                                Název kávy:
+                            </label>
+                            <input type="text"
+                                   th:field="*{name}"
+                                   class="form-control form-control-sm"
+                                   required>
                         </div>
+
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">Roastery:</label>
-                            <select th:field="*{roastery}" class="form-select form-select-sm">
-                                <option value="">-- Select --</option>
-                                <option th:each="r : ${allRoasteries}" th:value="${r.id}" th:text="${r.name}"></option>
+                            <label class="form-label small fw-bold">
+                                Pražírna:
+                            </label>
+                            <select th:field="*{roastery}"
+                                    class="form-select form-select-sm">
+                                <option value="">-- Vyber pražírnu --</option>
+                                <option th:each="r : ${allRoasteries}"
+                                        th:value="${r.id}"
+                                        th:text="${r.name}">
+                                </option>
                             </select>
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">Flavor Tags (comma separated):</label>
-                            <input type="text" name="tagNames" class="form-control form-control-sm"
-                                   placeholder="e.g. Chocolate, Nutty"
+                            <label class="form-label small fw-bold">
+                                Chuťové štítky (oddělené čárkou):
+                            </label>
+                            <input type="text"
+                                   name="tagNames"
+                                   class="form-control form-control-sm"
+                                   placeholder="Čokoláda, Oříšky"
                                    th:value="${coffee.tags != null and !coffee.tags.isEmpty()} ? ${#strings.listJoin(coffee.tags.![name], ', ')} : ''">
                         </div>
 
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">Roast Date:</label>
-                            <input type="date" th:field="*{roastDate}" class="form-control form-control-sm">
+                            <label class="form-label small fw-bold">
+                                Datum pražení:
+                            </label>
+                            <input type="date"
+                                   th:field="*{roastDate}"
+                                   class="form-control form-control-sm">
                         </div>
 
                         <div class="row g-2">
                             <div class="col-6 mb-2">
-                                <label class="form-label small fw-bold">Stock (pcs):</label>
-                                <input type="number" th:field="*{quantity}" class="form-control form-control-sm">
+                                <label class="form-label small fw-bold">
+                                    Skladem (ks):
+                                </label>
+                                <input type="number"
+                                       th:field="*{quantity}"
+                                       class="form-control form-control-sm">
                             </div>
+
                             <div class="col-6 mb-2">
-                                <label class="form-label small fw-bold">Price (CZK):</label>
-                                <input type="number" step="0.01" th:field="*{price}" class="form-control form-control-sm">
+                                <label class="form-label small fw-bold">
+                                    Cena (Kč):
+                                </label>
+                                <input type="number"
+                                       step="0.01"
+                                       th:field="*{price}"
+                                       class="form-control form-control-sm">
                             </div>
                         </div>
+
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">Popis pro e-shop:</label>
-                            <textarea th:field="*{description}" class="form-control form-control-sm" rows="3" maxlength="2000"></textarea>
+                            <label class="form-label small fw-bold">
+                                Popis pro e-shop:
+                            </label>
+                            <textarea th:field="*{description}"
+                                      class="form-control form-control-sm"
+                                      rows="3"
+                                      maxlength="2000"></textarea>
                         </div>
+
                         <div class="mb-2">
-                            <label class="form-label small fw-bold">URL fotografie kávy:</label>
-                            <input type="url" th:field="*{imageUrl}" class="form-control form-control-sm" placeholder="https://...">
-                            <small class="text-muted">Vlož veřejnou HTTPS adresu fotografie. Prázdná hodnota odstraní původní fotografii.</small>
-                            <img id="coffeeImagePreview" class="shop-preview" alt="Náhled fotografie" style="display:none" />
+                            <label class="form-label small fw-bold">
+                                URL fotografie kávy:
+                            </label>
+                            <input type="url"
+                                   th:field="*{imageUrl}"
+                                   class="form-control form-control-sm"
+                                   placeholder="https://...">
+
+                            <small class="text-muted">
+                                Vlož veřejnou HTTPS adresu fotografie.
+                                Prázdná hodnota odstraní původní fotografii.
+                            </small>
+
+                            <img id="coffeeImagePreview"
+                                 class="shop-preview"
+                                 alt="Náhled fotografie"
+                                 style="display:none">
                         </div>
+
                         <div class="form-check mb-2">
-                            <input type="checkbox" th:field="*{visibleInShop}" class="form-check-input">
-                            <label class="form-check-label">Zobrazit v zákaznickém e-shopu</label>
+                            <input type="checkbox"
+                                   th:field="*{visibleInShop}"
+                                   class="form-check-input">
+
+                            <label class="form-check-label">
+                                Zobrazit v zákaznickém e-shopu
+                            </label>
                         </div>
-                        <button type="submit" class="btn btn-success btn-sm w-100 mt-2 shadow-sm">Uložit kávu</button>
+
+                        <button type="submit"
+                                class="btn btn-success btn-sm w-100 mt-2 shadow-sm">
+                            Uložit kávu
+                        </button>
                     </form>
                 </div>
-            </div>
-
-            <div class="mt-2 text-center">
-                <form th:action="@{/logout}" method="post" class="mb-2">
-                    <button type="submit" class="btn btn-danger btn-sm w-100 shadow-sm">Logout</button>
-                </form>
-                <a th:href="@{/orders/all}" class="btn btn-info btn-sm w-100 mb-2 shadow-sm text-white">📑 My Orders</a>
-                <div sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/roasteries}" class="btn btn-outline-primary btn-sm w-100 mb-2 shadow-sm">🏬 Manage Roasteries</a>
-                    <a th:href="@{/admin/users}" class="btn btn-outline-dark btn-sm w-100 mb-2 shadow-sm">👥 Manage Users</a>
-                </div>
-                <a th:href="@{/menu}" class="btn btn-secondary btn-sm w-100 shadow-sm">🏠 Main Menu</a>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="card shadow border-0">
+
                 <div class="card-header bg-dark text-white p-3">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h3 class="mb-0">📦 Coffee Inventory</h3>
-                        <span class="badge bg-info" th:text="'Total Value: ' + ${#numbers.formatDecimal(total, 1, 2)} + ' CZK'"></span>
+                        <h3 class="mb-0">📦 Sklad káv</h3>
+
+                        <span class="badge bg-info"
+                              th:text="'Hodnota skladu: ' + ${#numbers.formatDecimal(total, 1, 2)} + ' Kč'">
+                        </span>
                     </div>
                 </div>
+
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 table-sm-text" id="mainTable">
+                        <table class="table table-hover align-middle mb-0 table-sm-text"
+                               id="mainTable">
+
                             <thead class="table-light">
                             <tr>
-                                <th class="ps-3">Name <i class="sort-btn" onclick="sortTable(0, 'text', this)">↕</i></th>
-                                <th>Roastery <i class="sort-btn" onclick="sortTable(1, 'text', this)">↕</i></th>
-                                <th>Roast Date <i class="sort-btn" onclick="sortTable(2, 'text', this)">↕</i></th>
-                                <th>In Stock <i class="sort-btn" onclick="sortTable(3, 'num', this)">↕</i></th>
-                                <th>Price <i class="sort-btn" onclick="sortTable(4, 'num', this)">↕</i></th>
-                                <th class="text-center">Action</th>
+                                <th class="ps-3">
+                                    Název
+                                    <i class="sort-btn"
+                                       onclick="sortTable(0, 'text', this)">↕</i>
+                                </th>
+
+                                <th>
+                                    Pražírna
+                                    <i class="sort-btn"
+                                       onclick="sortTable(1, 'text', this)">↕</i>
+                                </th>
+
+                                <th>
+                                    Datum pražení
+                                    <i class="sort-btn"
+                                       onclick="sortTable(2, 'text', this)">↕</i>
+                                </th>
+
+                                <th>
+                                    Skladem
+                                    <i class="sort-btn"
+                                       onclick="sortTable(3, 'num', this)">↕</i>
+                                </th>
+
+                                <th>
+                                    Cena
+                                    <i class="sort-btn"
+                                       onclick="sortTable(4, 'num', this)">↕</i>
+                                </th>
+
+                                <th class="text-center">Akce</th>
                             </tr>
                             </thead>
+
                             <tbody id="tableBody">
-                            <tr th:each="c : ${coffeeList}" class="coffee-row"
+
+                            <tr th:each="c : ${coffeeList}"
+                                class="coffee-row"
                                 th:classappend="${c.quantity == 0} ? 'out-of-stock' : (${c.quantity < 5} ? 'low-stock' : '')"
                                 th:data-roastery="${c.roastery != null ? c.roastery.name : ''}"
                                 th:data-tags="${c.tags != null and !c.tags.isEmpty() ? #strings.listJoin(c.tags.![name], ',') : ''}"
                                 th:data-qty="${c.quantity}"
                                 th:data-price="${c.price}">
+
                                 <td class="ps-3">
                                     <div class="d-flex align-items-center">
-                                        <img th:if="${c.imageUrl != null and !#strings.isEmpty(c.imageUrl)}" th:src="${c.imageUrl}" class="product-thumb" alt="Fotografie kávy" loading="lazy" />
+
+                                        <img th:if="${c.imageUrl != null and !#strings.isEmpty(c.imageUrl)}"
+                                             th:src="${c.imageUrl}"
+                                             class="product-thumb"
+                                             alt="Fotografie kávy"
+                                             loading="lazy">
+
                                         <div>
-                                            <div class="fw-bold col-name" th:text="${c.name}"></div>
-                                            <span th:if="${c.visibleInShop}" class="badge bg-success shop-status">V e-shopu</span>
-                                            <span th:unless="${c.visibleInShop}" class="badge bg-secondary shop-status">Skryto</span>
+                                            <div class="fw-bold col-name"
+                                                 th:text="${c.name}"></div>
+
+                                            <button type="button"
+                                                    class="mobile-coffee-toggle"
+                                                    aria-expanded="false"
+                                                    aria-label="Rozbalit detaily kávy"
+                                                    onclick="toggleCoffeeDetails(this)">
+                                                ＋
+                                            </button>
+
+                                            <span th:if="${c.visibleInShop}"
+                                                  class="badge bg-success shop-status">
+                                                V e-shopu
+                                            </span>
+
+                                            <span th:unless="${c.visibleInShop}"
+                                                  class="badge bg-secondary shop-status">
+                                                Skryto
+                                            </span>
                                         </div>
                                     </div>
+
                                     <div class="tags-container">
-                                        <span th:each="t : ${c.tags}" class="badge bg-light text-dark border tag-badge" th:text="${t.name}"></span>
+                                        <span th:each="t : ${c.tags}"
+                                              class="badge bg-light text-dark border tag-badge"
+                                              th:text="${t.name}">
+                                        </span>
                                     </div>
                                 </td>
-                                <td th:text="${c.roastery != null ? c.roastery.name : '---'}" class="col-roastery"></td>
-                                <td th:text="${c.roastDate != null ? #temporals.format(c.roastDate, 'dd.MM.yyyy') : 'N/A'}"></td>
-                                <td class="col-qty">
-                                    <span th:text="${c.quantity}" class="fw-bold"></span> pcs
-                                    <small th:if="${c.quantity > 0 and c.quantity < 5}" class="text-danger d-block" style="font-size: 0.65rem;">LOW STOCK</small>
+
+                                <td data-label="Pražírna"
+                                    class="col-roastery"
+                                    th:text="${c.roastery != null ? c.roastery.name : '---'}">
                                 </td>
-                                <td class="col-price fw-bold text-dark">
-                                    <span th:text="${#numbers.formatDecimal(c.price, 1, 2)}"></span> CZK
+
+                                <td data-label="Pražení"
+                                    th:text="${c.roastDate != null ? #temporals.format(c.roastDate, 'dd.MM.yyyy') : 'N/A'}">
                                 </td>
-                                <td class="text-center">
+
+                                <td data-label="Skladem" class="col-qty">
+                                    <span th:text="${c.quantity}"
+                                          class="fw-bold"></span>
+                                    ks
+
+                                    <small th:if="${c.quantity > 0 and c.quantity < 5}"
+                                           class="text-danger d-block"
+                                           style="font-size: 0.65rem;">
+                                        NÍZKÝ STAV
+                                    </small>
+                                </td>
+
+                                <td data-label="Cena"
+                                    class="col-price fw-bold text-dark">
+                                    <span th:text="${#numbers.formatDecimal(c.price, 1, 2)}"></span>
+                                    Kč
+                                </td>
+
+                                <td data-label="Akce" class="text-center">
                                     <div class="btn-group">
-                                        <button th:if="${c.quantity > 0}"
-                                                class="btn btn-sm btn-success shadow-sm buy-btn-trigger"
-                                                th:data-id="${c.id}"
-                                                th:data-name="${c.name}"
-                                                th:data-qty="${c.quantity}"
-                                th:data-price="${c.price}">
-                                            🛒 Buy
-                                        </button>
 
-                                        <span th:if="${c.quantity <= 0}" class="badge bg-secondary p-2">Sold Out</span>
+                                        <span sec:authorize="hasRole('ADMIN')"
+                                              class="d-flex ms-1">
 
-                                        <span sec:authorize="hasRole('ADMIN')" class="d-flex ms-1">
-                                            <a th:href="@{/coffee/edit/{id}(id=${c.id})}" class="btn btn-sm btn-light border" title="Upravit produkt">✏️</a>
-                                            <form th:action="@{/coffee/visibility/{id}(id=${c.id})}" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-sm ms-1" th:classappend="${c.visibleInShop} ? 'btn-outline-secondary' : 'btn-outline-success'" th:text="${c.visibleInShop} ? 'Skrýt' : 'Zveřejnit'" title="Změnit viditelnost v e-shopu"></button>
+                                            <a th:href="@{/coffee/edit/{id}(id=${c.id})}"
+                                               class="btn btn-sm btn-light border"
+                                               title="Upravit produkt">
+                                                ✏️
+                                            </a>
+
+                                            <form th:action="@{/coffee/visibility/{id}(id=${c.id})}"
+                                                  method="post"
+                                                  class="d-inline">
+
+                                                <button type="submit"
+                                                        class="btn btn-sm ms-1"
+                                                        th:classappend="${c.visibleInShop} ? 'btn-outline-secondary' : 'btn-outline-success'"
+                                                        th:text="${c.visibleInShop} ? 'Skrýt' : 'Zveřejnit'"
+                                                        title="Změnit viditelnost v e-shopu">
+                                                </button>
                                             </form>
-                                            <form th:action="@{/coffee/delete/{id}(id=${c.id})}" method="post" class="d-inline" onsubmit="return confirm('Opravdu smazat kávu v e-shopu?')"><button type="submit" class="btn btn-sm btn-outline-danger ms-1">Smazat</button></form>
+
+                                            <form th:action="@{/coffee/delete/{id}(id=${c.id})}"
+                                                  method="post"
+                                                  class="d-inline"
+                                                  onsubmit="return confirm('Opravdu smazat kávu v e-shopu?')">
+
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger ms-1">
+                                                    Smazat
+                                                </button>
+                                            </form>
+
                                         </span>
                                     </div>
                                 </td>
                             </tr>
+
                             </tbody>
                         </table>
                     </div>
@@ -191,62 +535,150 @@
 
         <div class="col-md-3">
             <div class="card shadow border-0">
+
                 <div class="card-header bg-secondary text-white p-3">
-                    <h3 class="mb-0">🔍 Filters</h3>
+                    <h3 class="mb-0">🔍 Filtry</h3>
                 </div>
+
                 <div class="card-body p-3">
+
                     <div class="mb-3">
-                        <label class="filter-label">Search Name</label>
-                        <input type="text" id="filterGeneral" class="form-control form-control-sm" placeholder="Search..." onkeyup="runFilters()">
+                        <label class="filter-label">Hledat název</label>
+                        <input type="text"
+                               id="filterGeneral"
+                               class="form-control form-control-sm"
+                               placeholder="Hledat..."
+                               onkeyup="runFilters()">
                     </div>
+
                     <div class="mb-3">
-                        <label class="filter-label">Roastery</label>
-                        <select id="filterRoastery" class="form-select form-select-sm" onchange="runFilters()">
-                            <option value="">All Roasteries</option>
-                            <option th:each="r : ${allRoasteries}" th:value="${r.name}" th:text="${r.name}"></option>
+                        <label class="filter-label">Pražírna</label>
+                        <select id="filterRoastery"
+                                class="form-select form-select-sm"
+                                onchange="runFilters()">
+
+                            <option value="">Všechny pražírny</option>
+
+                            <option th:each="r : ${allRoasteries}"
+                                    th:value="${r.name}"
+                                    th:text="${r.name}">
+                            </option>
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label class="filter-label">Flavor Tag</label>
-                        <select id="filterTag" class="form-select form-select-sm" onchange="runFilters()">
-                            <option value="">All Tags</option>
-                            <option th:each="t : ${allTags}" th:value="${t.name}" th:text="${t.name}"></option>
+                        <label class="filter-label">Chuťový štítek</label>
+                        <select id="filterTag"
+                                class="form-select form-select-sm"
+                                onchange="runFilters()">
+
+                            <option value="">Všechny štítky</option>
+
+                            <option th:each="t : ${allTags}"
+                                    th:value="${t.name}"
+                                    th:text="${t.name}">
+                            </option>
                         </select>
                     </div>
+
                     <div class="mb-3">
-                        <label class="filter-label">Min Stock <span id="qVal" class="range-value">0</span> pcs</label>
-                        <input type="range" id="filterQty" class="form-range" min="0" max="100" value="0" oninput="updateQty(this.value)">
+                        <label class="filter-label">
+                            Minimálně skladem:
+                            <span id="qVal" class="range-value">0</span>
+                            ks
+                        </label>
+
+                        <input type="range"
+                               id="filterQty"
+                               class="form-range"
+                               min="0"
+                               max="100"
+                               value="0"
+                               oninput="updateQty(this.value)">
                     </div>
+
                     <div class="mb-3">
-                        <label class="filter-label">Max Price <span id="pVal" class="range-value">5000</span> CZK</label>
-                        <input type="range" id="filterPrice" class="form-range" min="0" max="5000" step="10" value="5000" oninput="updatePrice(this.value)">
+                        <label class="filter-label">
+                            Maximální cena:
+                            <span id="pVal" class="range-value">5000</span>
+                            Kč
+                        </label>
+
+                        <input type="range"
+                               id="filterPrice"
+                               class="form-range"
+                               min="0"
+                               max="5000"
+                               step="10"
+                               value="5000"
+                               oninput="updatePrice(this.value)">
                     </div>
-                    <button class="btn btn-sm btn-outline-secondary w-100" onclick="resetAll()">Reset All</button>
+
+                    <button class="btn btn-sm btn-outline-secondary w-100"
+                            onclick="resetAll()">
+                        Resetovat filtry
+                    </button>
+
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
 <script>
+    // Rozbalování jednotlivých káv na telefonu
+    function toggleCoffeeDetails(button) {
+        const row = button.closest('.coffee-row');
+        const expanded = row.classList.toggle('mobile-expanded');
+
+        button.setAttribute('aria-expanded', String(expanded));
+        button.setAttribute(
+            'aria-label',
+            expanded ? 'Sbalit detaily kávy' : 'Rozbalit detaily kávy'
+        );
+
+        button.textContent = expanded ? '−' : '＋';
+    }
+
+    // Náhled fotografie
     const imageInput = document.getElementById('imageUrl');
     const imagePreview = document.getElementById('coffeeImagePreview');
+
     if (imageInput && imagePreview) {
         const updatePreview = () => {
             const url = imageInput.value.trim();
-            imagePreview.style.display = /^https:\/\//i.test(url) ? 'block' : 'none';
-            if (url) imagePreview.src = url;
+
+            imagePreview.style.display =
+                /^https:\/\//i.test(url) ? 'block' : 'none';
+
+            if (url) {
+                imagePreview.src = url;
+            }
         };
+
         imageInput.addEventListener('input', updatePreview);
-        imagePreview.addEventListener('error', () => imagePreview.style.display = 'none');
+
+        imagePreview.addEventListener('error', () => {
+            imagePreview.style.display = 'none';
+        });
+
         updatePreview();
     }
 
     let sorts = {};
 
-    function updatePrice(v) { document.getElementById('pVal').innerText = v; runFilters(); }
-    function updateQty(v) { document.getElementById('qVal').innerText = v; runFilters(); }
+    function updatePrice(v) {
+        document.getElementById('pVal').innerText = v;
+        runFilters();
+    }
 
+    function updateQty(v) {
+        document.getElementById('qVal').innerText = v;
+        runFilters();
+    }
+
+    // Filtrování káv
     function runFilters() {
         const q = document.getElementById('filterGeneral').value.toLowerCase();
         const r = document.getElementById('filterRoastery').value;
@@ -262,39 +694,59 @@
             const price = Number(row.dataset.price);
 
             const matchQuery = name.includes(q);
-            const matchRoastery = r === "" || roastery === r;
-            const matchTag = tag === "" || (rowTags && rowTags.split(',').map(t => t.trim()).includes(tag));
+            const matchRoastery = r === '' || roastery === r;
+
+            const matchTag = tag === '' ||
+                (rowTags &&
+                    rowTags.split(',').map(t => t.trim()).includes(tag));
+
             const matchStock = qty >= minQty;
             const matchPrice = price <= maxP;
 
-            row.classList.toggle('d-none-filtered', !(matchQuery && matchRoastery && matchTag && matchStock && matchPrice));
+            row.classList.toggle(
+                'd-none-filtered',
+                !(matchQuery &&
+                    matchRoastery &&
+                    matchTag &&
+                    matchStock &&
+                    matchPrice)
+            );
         });
     }
 
+    // Reset filtrů
     function resetAll() {
         document.getElementById('filterGeneral').value = '';
         document.getElementById('filterRoastery').value = '';
         document.getElementById('filterTag').value = '';
         document.getElementById('filterQty').value = 0;
         document.getElementById('filterPrice').value = 5000;
-        updateQty(0); updatePrice(5000);
+
+        updateQty(0);
+        updatePrice(5000);
         runFilters();
     }
 
+    // Řazení tabulky
     function sortTable(idx, type, btn) {
         const body = document.getElementById('tableBody');
         const rows = Array.from(body.querySelectorAll('.coffee-row'));
+
         if (rows.length === 0) return;
 
-        let dir = sorts[idx] === 'asc' ? 'desc' : 'asc';
+        const dir = sorts[idx] === 'asc' ? 'desc' : 'asc';
         sorts = { [idx]: dir };
 
-        document.querySelectorAll('.sort-btn').forEach(b => b.innerText = '↕');
-        btn.innerText = (dir === 'asc' ? '↑' : '↓');
+        document.querySelectorAll('.sort-btn').forEach(b => {
+            b.innerText = '↕';
+        });
+
+        btn.innerText = dir === 'asc' ? '↑' : '↓';
 
         rows.sort((a, b) => {
             let vA = a.cells[idx].innerText.trim();
             let vB = b.cells[idx].innerText.trim();
+
             if (type === 'num') {
                 vA = parseFloat(vA.replace(/[^\d.]/g, '')) || 0;
                 vB = parseFloat(vB.replace(/[^\d.]/g, '')) || 0;
@@ -302,54 +754,17 @@
                 vA = vA.toLowerCase();
                 vB = vB.toLowerCase();
             }
-            return dir === 'asc' ? (vA > vB ? 1 : -1) : (vA < vB ? 1 : -1);
+
+            if (vA === vB) return 0;
+
+            return dir === 'asc'
+                ? (vA > vB ? 1 : -1)
+                : (vA < vB ? 1 : -1);
         });
-        rows.forEach(r => body.appendChild(r));
+
+        rows.forEach(row => body.appendChild(row));
     }
-
-    document.addEventListener('click', function(e) {
-        if (e.target && e.target.classList.contains('buy-btn-trigger')) {
-            const id = e.target.getAttribute('data-id');
-            const name = e.target.getAttribute('data-name');
-            const maxQty = parseInt(e.target.getAttribute('data-qty'));
-
-            let qty = prompt("How many units of '" + name + "' do you want to buy?", "1");
-            if (qty === null) return;
-
-            qty = parseInt(qty);
-            if (isNaN(qty) || qty <= 0) {
-                alert("Please enter a valid number!");
-                return;
-            }
-            if (qty > maxQty) {
-                alert("Not enough stock! Max available: " + maxQty);
-                return;
-            }
-
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/orders/sell';
-            const idInput = document.createElement('input');
-            idInput.type = 'hidden'; idInput.name = 'id'; idInput.value = id;
-            form.appendChild(idInput);
-            const qtyInput = document.createElement('input');
-            qtyInput.type = 'hidden'; qtyInput.name = 'quantity'; qtyInput.value = qty;
-            form.appendChild(qtyInput);
-
-            const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
-            const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-            if (csrfToken) {
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '_csrf';
-                csrfInput.value = csrfToken;
-                form.appendChild(csrfInput);
-            }
-
-            document.body.appendChild(form);
-            form.submit();
-        }
-    });
 </script>
+
 </body>
 </html>

@@ -96,7 +96,6 @@ public class StorageController {
                 }
             }
         }
-        // Update the existing entity instead of replacing it: retain associations and historical data.
         Coffee savedCoffee = coffee;
         if (coffee.getId() != null) {
             savedCoffee = coffeeRepository.findById(coffee.getId()).orElseThrow(() ->
@@ -132,7 +131,6 @@ public class StorageController {
         coffeeRepository.findById(id).ifPresent(c -> {
             String author = (principal != null) ? principal.getName() : "System";
             auditLogRepository.save(new AuditLog(author, "Hidden coffee: " + c.getName(), LocalDateTime.now()));
-            // Keep product identity for historical order items; remove from storefront instead.
             c.setVisibleInShop(false);
             coffeeRepository.save(c);
         });

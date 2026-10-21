@@ -1,70 +1,487 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="cs"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <head>
     <meta charset="UTF-8">
-    <title>Main Menu | Coffee Management</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Hlavní menu | Kávový sklad</title>
+
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet">
+
+    <link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
+
     <style>
-        .card-hover:hover {
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            background: #f8f5ef !important;
+            color: #30251e;
+        }
+
+        /* HORNÍ NAVIGACE */
+        .menu-navbar {
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        .menu-navbar .navbar-brand {
+            font-weight: 700;
+            font-size: 19px;
+            white-space: normal;
+        }
+
+        .menu-navbar .navbar-toggler {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 7px 11px;
+            color: white;
+            box-shadow: none;
+        }
+
+        .menu-navbar .navbar-toggler:focus {
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+        }
+
+        .menu-navbar .navbar-toggler-icon {
+            filter: brightness(0) invert(1);
+        }
+
+        .menu-navbar .nav-link {
+            padding: 8px 10px;
+        }
+
+        .menu-navbar .logout-form {
+            margin: 0;
+        }
+
+        /* OBSAH */
+        .menu-container {
+            padding-top: 45px;
+            padding-bottom: 30px;
+        }
+
+        .welcome-title {
+            font-size: 38px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .welcome-description {
+            font-size: 17px;
+            color: #81766e;
+        }
+
+        /* KARTY */
+        .menu-card {
+            height: 100%;
+            border: 1px solid #e6ddd1;
+            border-radius: 18px;
+            overflow: hidden;
+            background: white;
+            transition: transform 0.2s ease,
+            box-shadow 0.2s ease;
+        }
+
+        .menu-card:hover {
             transform: translateY(-5px);
-            transition: 0.3s;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.12) !important;
+            box-shadow: 0 12px 28px rgba(48, 37, 30, 0.13) !important;
+        }
+
+        .menu-card .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 24px;
+        }
+
+        .menu-icon {
+            font-size: 64px;
+            line-height: 1.2;
+            margin-bottom: 18px;
+        }
+
+        .menu-card .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #30251e;
+            margin-bottom: 14px;
+        }
+
+        .menu-card .card-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #81766e;
+            flex-grow: 1;
+        }
+
+        .menu-card .btn {
+            width: 100%;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 18px;
+        }
+
+        .menu-footer {
+            margin-top: 48px;
+            padding-top: 20px;
+            text-align: center;
+            color: #81766e;
+            font-size: 13px;
+            border-top: 1px solid #e6ddd1;
+        }
+
+        /* TABLETY A TELEFONY */
+        @media (max-width: 991.98px) {
+            .menu-navbar .navbar-collapse {
+                margin-top: 14px;
+                padding-top: 12px;
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .menu-navbar .navbar-nav {
+                gap: 2px;
+            }
+
+            .menu-navbar .nav-link {
+                display: block;
+                padding: 11px 8px;
+            }
+
+            .menu-navbar .logout-form {
+                margin-top: 12px;
+            }
+
+            .menu-navbar .logout-form button {
+                min-height: 44px;
+                width: 100%;
+            }
+
+            .menu-container {
+                padding-top: 30px;
+            }
+
+            .welcome-title {
+                font-size: 31px;
+            }
+        }
+
+        /* TELEFONY */
+        @media (max-width: 576px) {
+            .menu-navbar {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .menu-navbar .container-fluid {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .menu-navbar .navbar-brand {
+                font-size: 16px;
+                max-width: calc(100% - 65px);
+            }
+
+            .menu-container {
+                padding: 24px 12px 25px;
+            }
+
+            .welcome-title {
+                font-size: 26px;
+                line-height: 1.25;
+            }
+
+            .welcome-description {
+                font-size: 15px;
+            }
+
+            .menu-card {
+                border-radius: 15px;
+            }
+
+            .menu-card .card-body {
+                padding: 24px 20px;
+            }
+
+            .menu-icon {
+                font-size: 52px;
+                margin-bottom: 12px;
+            }
+
+            .menu-card .card-title {
+                font-size: 20px;
+            }
+
+            .menu-card .card-text {
+                font-size: 14px;
+            }
+
+            .menu-card .btn {
+                min-height: 50px;
+            }
+
+            .menu-footer {
+                margin-top: 32px;
+                font-size: 12px;
+            }
+        }
+
+        /* MALÉ TELEFONY */
+        @media (max-width: 360px) {
+            .menu-container {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            .welcome-title {
+                font-size: 23px;
+            }
+
+            .menu-card .card-body {
+                padding: 20px 15px;
+            }
+        }
+
+        /* OMEZENÍ ANIMACÍ */
+        @media (prefers-reduced-motion: reduce) {
+            .menu-card {
+                transition: none;
+            }
+
+            .menu-card:hover {
+                transform: none;
+            }
         }
     </style>
 </head>
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg coffee-nav"><div class="container-fluid px-4"><a class="navbar-brand" th:href="@{/menu}">☕ KÁVOVÝ SKLAD</a><div class="d-flex flex-wrap gap-2 align-items-center"><a th:href="@{/menu}" class="nav-link">Úvod</a><a th:href="@{/coffee/all}" class="nav-link">Káva</a><a th:href="@{/orders/all}" class="nav-link">Objednávky</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/dashboard}" class="nav-link">Dashboard</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/roasteries}" class="nav-link">Pražírny</a><a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}" class="nav-link">Správa</a><form th:action="@{/logout}" method="post"><button class="btn btn-sm btn-outline-light" type="submit">Odhlásit</button></form></div></div></nav>
+
+<body>
 
 
+<nav class="navbar navbar-expand-lg coffee-nav menu-navbar">
 
-<div class="container">
-    <div class="row mb-4">
-        <div class="col text-center">
-            <h1 class="display-4 fw-bold">Welcome to the System</h1>
-            <p class="lead text-muted">Select a section you wish to manage.</p>
+    <div class="container-fluid px-4">
+
+        <a class="navbar-brand" th:href="@{/menu}">
+            ☕ KÁVOVÝ SKLAD
+        </a>
+
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar"
+                aria-expanded="false"
+                aria-label="Otevřít navigaci">
+
+            <span class="navbar-toggler-icon"></span>
+
+        </button>
+
+        <div
+                class="collapse navbar-collapse"
+                id="mainNavbar">
+
+            <div class="navbar-nav ms-lg-auto align-items-lg-center">
+
+                <a
+                        th:href="@{/menu}"
+                        class="nav-link"
+                        aria-current="page">
+                    Úvod
+                </a>
+
+                <a
+                        th:href="@{/coffee/all}"
+                        class="nav-link">
+                    Káva
+                </a>
+
+                <a
+                        th:href="@{/orders/all}"
+                        class="nav-link">
+                    Objednávky
+                </a>
+
+                <a
+                        sec:authorize="hasRole('ADMIN')"
+                        th:href="@{/dashboard}"
+                        class="nav-link">
+                    Dashboard
+                </a>
+
+                <a
+                        sec:authorize="hasRole('ADMIN')"
+                        th:href="@{/roasteries}"
+                        class="nav-link">
+                    Pražírny
+                </a>
+
+                <a
+                        sec:authorize="hasRole('ADMIN')"
+                        th:href="@{/admin/users}"
+                        class="nav-link">
+                    Správa
+                </a>
+
+                <form
+                        th:action="@{/logout}"
+                        method="post"
+                        class="logout-form ms-lg-3">
+
+                    <button
+                            type="submit"
+                            class="btn btn-sm btn-outline-light">
+                        Odhlásit
+                    </button>
+
+                </form>
+
+            </div>
+
         </div>
+
+    </div>
+
+</nav>
+
+<main class="container menu-container">
+
+    <div class="row mb-4">
+
+        <div class="col text-center">
+
+            <h1 class="welcome-title">
+                Vítejte v Kávovém skladu
+            </h1>
+
+            <p class="welcome-description mb-0">
+                Vyberte sekci, kterou chcete spravovat.
+            </p>
+
+        </div>
+
     </div>
 
     <div class="row g-4 justify-content-center">
-        <div class="col-md-6 col-lg-4">
-            <div class="card h-100 shadow-sm card-hover border-primary">
-                <div class="card-body text-center p-4">
-                    <div class="display-1 mb-3">📦</div>
-                    <h3 class="card-title">Coffee Inventory</h3>
-                    <p class="card-text text-muted">Stock overview, adding new batches, and quantity management.</p>
-                    <a href="/coffee/all" class="btn btn-primary btn-lg w-100 mt-3">Enter Inventory</a>
+
+        <div class="col-12 col-md-6 col-lg-4">
+
+            <div class="card menu-card shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <div class="menu-icon" aria-hidden="true">
+                        📦
+                    </div>
+
+                    <h2 class="card-title">
+                        Sklad kávy
+                    </h2>
+
+                    <p class="card-text">
+                        Přehled skladových zásob, evidence kávy,
+                        přidávání nových položek a správa množství.
+                    </p>
+
+                    <a
+                            th:href="@{/coffee/all}"
+                            class="btn btn-primary">
+                        Otevřít sklad
+                    </a>
+
                 </div>
+
             </div>
+
         </div>
 
-        <div class="col-md-6 col-lg-4" sec:authorize="hasRole('ADMIN')">
-            <div class="card h-100 shadow-sm card-hover border-dark">
-                <div class="card-body text-center p-4">
-                    <div class="display-1 mb-3">🏭</div>
-                    <h3 class="card-title">Roasteries</h3>
-                    <p class="card-text text-muted">List of supplier roasteries, locations, and countries of origin.</p>
-                    <a th:href="@{/roasteries}" class="btn btn-dark btn-lg w-100 mt-3">Manage Roasteries</a>
+        <div
+                class="col-12 col-md-6 col-lg-4"
+                sec:authorize="hasRole('ADMIN')">
+
+            <div class="card menu-card shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <div class="menu-icon" aria-hidden="true">
+                        🏭
+                    </div>
+
+                    <h2 class="card-title">
+                        Pražírny
+                    </h2>
+
+                    <p class="card-text">
+                        Seznam partnerských pražíren,
+                        jejich adres, zemí a webových stránek.
+                    </p>
+
+                    <a
+                            th:href="@{/roasteries}"
+                            class="btn btn-dark">
+                        Spravovat pražírny
+                    </a>
+
                 </div>
+
             </div>
+
         </div>
 
-        <div class="col-md-6 col-lg-4" sec:authorize="hasRole('ADMIN')">
-            <div class="card h-100 shadow-sm card-hover border-danger">
-                <div class="card-body text-center p-4">
-                    <div class="display-1 mb-3">⚙️</div>
-                    <h3 class="card-title">Admin Panel</h3>
-                    <p class="card-text text-muted">User management, role assignments, and system audit logs.</p>
-                    <a href="/admin/users" class="btn btn-danger btn-lg w-100 mt-3">Manage Users</a>
+        <div
+                class="col-12 col-md-6 col-lg-4"
+                sec:authorize="hasRole('ADMIN')">
+
+            <div class="card menu-card shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <div class="menu-icon" aria-hidden="true">
+                        ⚙️
+                    </div>
+
+                    <h2 class="card-title">
+                        Správa systému
+                    </h2>
+
+                    <p class="card-text">
+                        Správa uživatelů, změny uživatelských rolí
+                        a přehled auditních záznamů.
+                    </p>
+
+                    <a
+                            th:href="@{/admin/users}"
+                            class="btn btn-danger">
+                        Spravovat uživatele
+                    </a>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
 
-    <footer class="mt-5 py-3 text-center text-muted border-top">
-        &copy; 2026 Coffee Storage - Semester Project
+    <footer class="menu-footer">
+        &copy; 2026 Kávový sklad – Semestrální projekt
     </footer>
-</div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

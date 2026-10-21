@@ -82,7 +82,6 @@
                                     th:text="'#' + ${o.id}">
                                 </td>
 
-                                <!-- OPRAVA: přednost má jméno zákazníka z objednávky -->
                                 <td sec:authorize="hasRole('ADMIN')">
                                     <span class="badge bg-info text-dark"
                                           th:text="${o.customerName != null and !#strings.isEmpty(o.customerName) ? o.customerName : (o.user != null ? o.user.username : 'Neuvedeno')}">

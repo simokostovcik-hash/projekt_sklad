@@ -1,54 +1,324 @@
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="cs" xmlns:th="http://www.thymeleaf.org">
+
 <head>
   <meta charset="UTF-8">
-  <title>User Registration | Coffee Storage</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
-</head>
-<body class="bg-light d-flex align-items-center" style="height: 100vh;">
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-4 card shadow p-4 border-0">
-      <h2 class="text-center mb-4 fw-bold">New Registration</h2>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-      <div th:if="${error}" class="alert alert-danger py-2 small" th:text="${error}"></div>
+  <title>Registrace | Kávový sklad</title>
+
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+  >
+
+  <link rel="stylesheet" th:href="@{/css/coffee-theme.css}">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 24px 16px;
+      background: #f8f5ef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .register-container {
+      width: 100%;
+      max-width: 430px;
+    }
+
+    .register-card {
+      border: none;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 35px rgba(48, 37, 30, 0.12);
+    }
+
+    .register-card .card-body {
+      padding: 36px;
+    }
+
+    .register-icon {
+      font-size: 42px;
+      line-height: 1;
+      margin-bottom: 14px;
+    }
+
+    .register-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #30251e;
+    }
+
+    .register-subtitle {
+      font-size: 14px;
+      color: #81766e;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 14px;
+      color: #30251e;
+    }
+
+    .form-control {
+      min-height: 48px;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 16px;
+    }
+
+    .form-control:focus {
+      border-color: #a17b58;
+      box-shadow: 0 0 0 0.2rem rgba(161, 123, 88, 0.15);
+    }
+
+    .form-check-input {
+      width: 19px;
+      height: 19px;
+      cursor: pointer;
+    }
+
+    .form-check-label {
+      padding-left: 5px;
+      cursor: pointer;
+    }
+
+    .register-button {
+      min-height: 48px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #30251e;
+      border-color: #30251e;
+    }
+
+    .register-button:hover,
+    .register-button:focus {
+      background: #a17b58;
+      border-color: #a17b58;
+    }
+
+    .login-link {
+      color: #8b6546;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .login-link:hover {
+      color: #30251e;
+      text-decoration: underline;
+    }
+
+    .register-footer {
+      margin-top: 24px;
+      text-align: center;
+      color: #81766e;
+      font-size: 12px;
+    }
+
+    @media (max-width: 576px) {
+      body {
+        align-items: flex-start;
+        padding: 20px 12px;
+      }
+
+      .register-container {
+        max-width: 100%;
+        margin: auto 0;
+      }
+
+      .register-card {
+        border-radius: 16px;
+      }
+
+      .register-card .card-body {
+        padding: 28px 20px;
+      }
+
+      .register-icon {
+        font-size: 38px;
+      }
+
+      .register-title {
+        font-size: 25px;
+      }
+
+      .form-control {
+        min-height: 50px;
+      }
+
+      .register-button {
+        min-height: 50px;
+      }
+    }
+
+    /* MALÉ TELEFONY */
+    @media (max-width: 360px) {
+      body {
+        padding: 12px 8px;
+      }
+
+      .register-card .card-body {
+        padding: 22px 15px;
+      }
+
+      .register-title {
+        font-size: 23px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="register-container">
+
+  <div class="card register-card">
+
+    <div class="card-body">
+
+      <div class="text-center mb-4">
+
+        <div class="register-icon">☕</div>
+
+        <h1 class="register-title mb-2">
+          Vytvořit účet
+        </h1>
+
+        <p class="register-subtitle mb-0">
+          Registrace do Kávového skladu
+        </p>
+
+      </div>
+
+      <div
+              th:if="${error}"
+              class="alert alert-danger small"
+              role="alert"
+              th:text="${error}">
+      </div>
 
       <form th:action="@{/register}" method="post">
-        <div class="mb-3">
-          <label class="form-label">Username</label>
-          <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
-        </div>
 
         <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input type="password" id="passwordField" name="password" class="form-control" placeholder="Enter password" required>
+
+          <label
+                  for="username"
+                  class="form-label">
+            Uživatelské jméno
+          </label>
+
+          <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  class="form-control"
+                  placeholder="Zadejte uživatelské jméno"
+                  autocomplete="username"
+                  autocapitalize="none"
+                  spellcheck="false"
+                  required
+                  autofocus
+          >
+
         </div>
 
-        <div class="mb-3 form-check">
-          <input type="checkbox" class="form-check-input" id="showPasswordCheck" onclick="togglePassword()">
-          <label class="form-check-label small text-muted" for="showPasswordCheck">Show password</label>
+        <div class="mb-3">
+
+          <label
+                  for="passwordField"
+                  class="form-label">
+            Heslo
+          </label>
+
+          <input
+                  type="password"
+                  id="passwordField"
+                  name="password"
+                  class="form-control"
+                  placeholder="Zadejte heslo"
+                  autocomplete="new-password"
+                  required
+          >
+
         </div>
 
-        <button type="submit" class="btn btn-primary w-100">Create Account</button>
+        <div class="mb-4 form-check">
+
+          <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="showPasswordCheck"
+                  onchange="togglePassword()"
+          >
+
+          <label
+                  class="form-check-label small text-muted"
+                  for="showPasswordCheck">
+            Zobrazit heslo
+          </label>
+
+        </div>
+
+        <div class="d-grid">
+
+          <button
+                  type="submit"
+                  class="btn btn-primary register-button">
+            Vytvořit účet
+          </button>
+
+        </div>
+
       </form>
 
-      <div class="mt-4 text-center border-top pt-3">
-        <span class="text-muted small">Already have an account?</span>
-        <a href="/login" class="small text-primary text-decoration-none fw-bold">Sign In</a>
+      <hr class="my-4">
+
+      <div class="text-center">
+
+        <p class="mb-2 small text-muted">
+          Už máte účet?
+        </p>
+
+        <a
+                th:href="@{/login}"
+                class="login-link">
+          Přihlásit se
+        </a>
+
       </div>
+
     </div>
+
   </div>
+
+  <div class="register-footer">
+    ☕ Kávový sklad
+  </div>
+
 </div>
 
 <script>
   function togglePassword() {
-    var passInput = document.getElementById("passwordField");
-    if (passInput.type === "password") {
-      passInput.type = "text";
-    } else {
-      passInput.type = "password";
-    }
+    const passwordInput =
+            document.getElementById("passwordField");
+
+    const showPassword =
+            document.getElementById("showPasswordCheck").checked;
+
+    passwordInput.type = showPassword
+            ? "text"
+            : "password";
   }
 </script>
 
