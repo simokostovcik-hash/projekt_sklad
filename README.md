@@ -1,138 +1,227 @@
-# Coffee Warehouse – Full-Stack E-Commerce Project
+# Coffee Warehouse (Kávový sklad)
 
-**A personal full-stack web development project built with React, Java, Spring Boot, and MySQL.**
+### Full-Stack E-Commerce Application | React · Java · Spring Boot · MySQL
 
-Coffee Warehouse (*Kávový sklad*) is a web application designed to demonstrate the core functionality of an online coffee store, including product browsing, shopping cart management, checkout, and order processing.
+Coffee Warehouse is my personal full-stack development project focused on building a web application for an online coffee store.
 
-I started this project to develop my practical programming skills and gain experience building an application that connects a modern frontend with a Java backend and a relational database.
+The project combines a React frontend, a Java Spring Boot backend, and a MySQL database. It is designed around common e-commerce functionality, including browsing products, managing a shopping cart, placing orders, and working with inventory data.
 
-The project is an ongoing learning experience through which I explore frontend development, REST APIs, database management, application architecture, and the challenges of building a complete web application.
+I started developing this application to improve my programming skills and gain practical experience with the technologies and challenges involved in full-stack web development.
+
+The project is still evolving as I continue learning, improving existing features, and experimenting with new functionality.
+
+---
 
 ## Live Demo
 
-**[Open Coffee Warehouse](https://simokostovcik-hash.github.io/projekt_sklad/)**
+**[Open Coffee Warehouse – Public Demo](https://simokostovcik-hash.github.io/projekt_sklad/)**
 
-The public version is a frontend-only demonstration hosted on GitHub Pages.
+*The link will become available after the GitHub Pages deployment is completed.*
 
-It uses simulated data and does not connect to the Spring Boot backend or MySQL database. No real orders or payments are processed.
+The public demo is designed to let visitors explore the customer-facing application without registration or login.
 
-*The demo link will become available after GitHub Pages has been successfully deployed.*
+It runs entirely in the browser using simulated data. The Spring Boot backend and MySQL database are not connected to the public version.
+
+No real orders are placed, no payments are processed, and no checkout information is sent to the backend.
 
 ## Features
 
-### Public Demo
+### Public Frontend Demo
 
-The frontend demonstration includes:
+The public demonstration is designed to showcase:
 
-- Coffee product catalogue and product filtering
-- Shopping cart functionality
-- Checkout process with simulated payment
+- Coffee product catalogue
+- Product browsing and filtering
+- Shopping cart management
+- Checkout process
+- Simulated payment
 - Demo order confirmation
 - Downloadable text-based demo confirmation
-- Responsive web interface
+- Responsive user interface
 
-Demo orders are stored temporarily in the current page session and disappear when the page is refreshed. The checkout form does not submit personal information to a backend.
+The demo uses temporary data stored in the current page session. Test orders are not permanently saved and disappear when the page is refreshed.
 
-### Full-Stack Application
+Visitors can explore the application without creating an account.
 
-The repository also contains a separate Java Spring Boot backend and MySQL integration, developed to support the broader e-commerce application.
+### Full-Stack Development
 
-The backend project includes code related to:
+In addition to the public frontend demo, the repository contains the backend implementation developed using Java and Spring Boot.
 
-- REST API endpoints
+The backend includes components for:
+
+- REST API communication
 - Product and inventory management
 - Order processing
 - Database entities and repositories
-- Application configuration and security
+- Application configuration
+- Authentication and security configuration
+- Administrative functionality
 
-These backend features are separate from the public GitHub Pages demo and require a locally configured environment.
+These features are part of the broader development project and are not publicly accessible through GitHub Pages.
 
-## Technologies Used
+---
+
+## Technology Stack
 
 | Area | Technologies |
 |---|---|
-| Frontend | React, JavaScript, Vite, HTML, CSS |
+| Frontend | React, JavaScript, HTML, CSS |
+| Build Tool | Vite |
 | Backend | Java, Spring Boot |
 | Database | MySQL |
-| Development Tools | Git, GitHub, Maven, npm |
-| Demo Hosting | GitHub Pages, GitHub Actions |
+| Backend Build | Maven |
+| Version Control | Git, GitHub |
+| Public Demo Hosting | GitHub Pages, GitHub Actions |
 
 ## Project Structure
 
 ```text
 projekt_sklad/
-├── frontend/          # React and Vite application
+├── frontend/
 │   ├── public/
 │   ├── src/
+│   │   ├── api/
+│   │   ├── assets/
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── index.html
 │   ├── package.json
 │   └── vite.config.js
-├── src/               # Java Spring Boot source code
-├── mysql/             # SQL scripts
-├── pom.xml            # Maven configuration
+├── src/
+│   └── main/
+│       ├── java/
+│       └── resources/
+├── mysql/
+├── pom.xml
 └── README.md
 ```
 
+The `frontend` directory contains the React application.
+
+The `src` directory contains the Java Spring Boot backend, while `mysql` contains SQL scripts related to the database.
+
 ## Running the Frontend Locally
 
-Requirements: Node.js and npm.
+**Requirements:** Node.js and npm.
+
+Clone the repository:
 
 ```bash
-cd frontend
+git clone https://github.com/simokostovcik-hash/projekt_sklad.git
+cd projekt_sklad/frontend
+```
+
+Install dependencies:
+
+```bash
 npm ci
+```
+
+Start the development server:
+
+```bash
 npm run dev
 ```
 
-To test the production build:
+Vite will display the local development URL in the terminal.
+
+### Testing the Public Demo Build
+
+The public demo configuration uses `VITE_PUBLIC_DEMO=true` in `frontend/.env.production`.
+
+To build and preview the production version:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-The public demo build is configured to use `VITE_PUBLIC_DEMO=true` in `frontend/.env.production`.
+The production demo is designed to work without connecting to the Java backend.
 
-## Running the Full-Stack Application
+## Running the Full-Stack Application Locally
 
-The complete development environment requires Java, Maven, MySQL, and Node.js.
+**Requirements:**
 
-1. Configure and start a local MySQL database.
-2. Review the Spring Boot database settings in `src/main/resources/application.properties`.
-3. Start the Spring Boot application.
-4. Open the `frontend` directory and run `npm ci` followed by `npm run dev`.
+- Java
+- Maven
+- MySQL
+- Node.js and npm
 
-During local development, the Vite proxy forwards `/api` requests to `localhost:8080`.
+To run the full-stack development version:
 
-The full-stack application is intended for a configured development environment. Its backend, administrative functions, and order-processing features are not exposed through the public demo.
+1. Set up and start a local MySQL database.
+2. Review the SQL scripts in the `mysql` directory.
+3. Configure the database connection in the Spring Boot application settings.
+4. Start the Spring Boot backend.
+5. Start the React frontend using `npm run dev`.
+
+The Vite development proxy is configured to forward `/api` requests to `localhost:8080`.
+
+The full-stack version requires an appropriately configured local environment and is separate from the public demo.
+
+Do not publish real database passwords, API keys, or other credentials in the repository.
+
+---
+
+## Demo Access and Security
+
+The public demo does not require registration or login.
+
+Visitors can browse the application and try the shopping experience using simulated data.
+
+For security reasons, the backend and administrative functionality are not exposed through the public GitHub Pages demo.
+
+The repository contains the backend source code for anyone interested in reviewing the application's architecture and implementation.
+
+The public demo is intended to demonstrate the user interface and customer experience, while the source code demonstrates the broader full-stack development work.
 
 ## What I Am Learning
 
-Through this project, I am gaining hands-on experience with:
+This project helps me develop practical experience in several areas of software development:
 
-- Building reusable React components and interactive interfaces
-- Developing backend functionality with Java and Spring Boot
-- Designing and working with relational databases
-- Connecting frontend applications to REST APIs
-- Managing source code and project updates with Git and GitHub
-- Understanding the structure and responsibilities of full-stack applications
+- Creating interactive user interfaces with React
+- Working with JavaScript and frontend application state
+- Developing REST APIs using Java and Spring Boot
+- Working with relational databases and SQL
+- Connecting frontend and backend components
+- Understanding authentication and application security
+- Organizing and maintaining a larger codebase
+- Using Git and GitHub for version control
+- Preparing applications for deployment
 
-My goal is to continue improving the application, expand my technical knowledge, and develop the practical skills needed for a junior software development role.
+I use this project as an opportunity to apply what I learn, solve technical problems, and improve my understanding of how real web applications are designed and developed.
 
-## Demo Access and Backend
+## Future Development
 
-The public demo is available without registration or login.
+As I continue working on Coffee Warehouse, I would like to focus on:
 
-Visitors can explore the coffee catalogue, manage a shopping cart, and test the checkout process using simulated data. No real payments or orders are processed.
+- Improving the user interface and overall usability
+- Refactoring and organizing the existing code
+- Expanding automated testing
+- Improving backend security and configuration
+- Refining database operations and API integration
+- Exploring secure deployment options for the complete full-stack application
 
-The repository also contains the Java Spring Boot backend and MySQL integration developed for the full-stack application.
+These are development goals rather than features guaranteed to be available in the current version.
 
-For security reasons, the backend and administrative features are not publicly accessible. The source code is available in this repository for anyone interested in reviewing the implementation.
+## Important Notes
 
-The public demo focuses on showcasing the user interface and customer shopping experience, while the repository demonstrates the broader full-stack development work.
+Coffee Warehouse is a personal educational and portfolio project, not a commercial online store.
+
+The public demo does not process real payments or orders. Visitors should use fictional information when testing checkout functionality.
+
+Some product images may be loaded from external services such as Unsplash.
+
+The backend is not publicly hosted, and its administrative functionality is not available to public demo visitors.
 
 ## Author
 
 **Šimon Kostovčík**
 
-Aspiring Junior Developer | IT Technician
+Aspiring Junior Software Developer | IT Technician
 
-[GitHub Profile](https://github.com/simokostovcik-hash) | [Project Repository](https://github.com/simokostovcik-hash/projekt_sklad)
+I am interested in software development, computer hardware, and learning new technologies. Coffee Warehouse is one of the projects through which I am building practical experience and improving my development skills.
+
+**GitHub:** https://github.com/simokostovcik-hash
+
+**Repository:** https://github.com/simokostovcik-hash/projekt_sklad
