@@ -1,44 +1,134 @@
-# Kávový sklad – veřejné demo e-shopu
+# Coffee Warehouse – Full-Stack E-Commerce Project
 
-Projekt obsahuje React/Vite frontend a samostatný Spring Boot backend s MySQL. **Veřejné demo používá pouze frontend a simulovaná data**, takže se nic skutečně neobjednává, neplatí a nikam se neposílají osobní údaje.
+**A personal full-stack web development project built with React, Java, Spring Boot, and MySQL.**
 
-## Veřejné preview
+Coffee Warehouse (*Kávový sklad*) is a web application designed to demonstrate the core functionality of an online coffee store, including product browsing, shopping cart management, checkout, and order processing.
 
-Po publikaci repozitáře `projekt_sklad` na účtu `simokostovcik-hash` bude ukázka dostupná na:
+I started this project to develop my practical programming skills and gain experience building an application that connects a modern frontend with a Java backend and a relational database.
 
-**https://simokostovcik-hash.github.io/projekt_sklad/**
+The project is an ongoing learning experience through which I explore frontend development, REST APIs, database management, application architecture, and the challenges of building a complete web application.
 
-Pokud se repozitář jmenuje jinak, změňte v odkazu název za `github.io/`. Odkaz začne fungovat až po úspěšném nasazení GitHub Pages.
+## Live Demo
 
-## Jak zveřejnit
+**[Open Coffee Warehouse](https://simokostovcik-hash.github.io/projekt_sklad/)**
 
-1. Nahrajte obsah této složky do GitHub repozitáře (bez `.git`, databází, `.env`, `node_modules` a `target`).
-2. GitHub → **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-3. GitHub → **Actions** → počkejte na dokončení workflow `Deploy demo to GitHub Pages`.
-4. Otevřete URL uvedenou v Pages nebo výše (podle názvu repozitáře).
+The public version is a frontend-only demonstration hosted on GitHub Pages.
 
-## Co ve veřejném demu funguje
+It uses simulated data and does not connect to the Spring Boot backend or MySQL database. No real orders or payments are processed.
 
-- Prohlížení katalogu, filtrování, košík, checkout a simulovaná platba.
-- Testovací objednávky existují pouze v paměti aktuálně otevřené stránky. Po obnovení stránky zmizí.
-- Po platbě lze stáhnout **textové DEMO potvrzení**, nikoli fakturu.
-- Formulář neodesílá data na žádný backend. Používejte smyšlené údaje.
+*The demo link will become available after GitHub Pages has been successfully deployed.*
 
-## Lokální vývoj s backendem
+## Features
 
-Pro plný původní projekt: spusťte MySQL, Spring Boot podle `src/main/resources/application.properties` a ve `frontend` spusťte `npm ci` a `npm run dev`. Vite proxy předává `/api` na `localhost:8080`. Vývojový režim nepoužívá veřejnou simulaci. **Backend nepřipojujte přímo k veřejnému demu** – obsahuje administrační funkce a zpracování objednávek, které vyžadují samostatný bezpečnostní audit.
+### Public Demo
 
-## Lokální test veřejné verze
+The frontend demonstration includes:
+
+- Coffee product catalogue and product filtering
+- Shopping cart functionality
+- Checkout process with simulated payment
+- Demo order confirmation
+- Downloadable text-based demo confirmation
+- Responsive web interface
+
+Demo orders are stored temporarily in the current page session and disappear when the page is refreshed. The checkout form does not submit personal information to a backend.
+
+### Full-Stack Application
+
+The repository also contains a separate Java Spring Boot backend and MySQL integration, developed to support the broader e-commerce application.
+
+The backend project includes code related to:
+
+- REST API endpoints
+- Product and inventory management
+- Order processing
+- Database entities and repositories
+- Application configuration and security
+
+These backend features are separate from the public GitHub Pages demo and require a locally configured environment.
+
+## Technologies Used
+
+| Area | Technologies |
+|---|---|
+| Frontend | React, JavaScript, Vite, HTML, CSS |
+| Backend | Java, Spring Boot |
+| Database | MySQL |
+| Development Tools | Git, GitHub, Maven, npm |
+| Demo Hosting | GitHub Pages, GitHub Actions |
+
+## Project Structure
+
+```text
+projekt_sklad/
+├── frontend/          # React and Vite application
+│   ├── public/
+│   ├── src/
+│   ├── package.json
+│   └── vite.config.js
+├── src/               # Java Spring Boot source code
+├── mysql/             # SQL scripts
+├── pom.xml            # Maven configuration
+└── README.md
+```
+
+## Running the Frontend Locally
+
+Requirements: Node.js and npm.
 
 ```bash
 cd frontend
 npm ci
+npm run dev
+```
+
+To test the production build:
+
+```bash
 npm run build
 npm run preview
 ```
 
-V produkčním sestavení je nastaveno `VITE_PUBLIC_DEMO=true` v `frontend/.env.production`.
+The public demo build is configured to use `VITE_PUBLIC_DEMO=true` in `frontend/.env.production`.
 
-## Poznámka k ochraně soukromí
+## Running the Full-Stack Application
 
-Veřejné demo nepoužívá databázi ani neposílá e-maily. Obrázky mohou být načítány z externí služby Unsplash, což může znamenat přenos IP adresy třetí straně; pro zcela nezávislé nasazení nahraďte externí obrázky lokálními.
+The complete development environment requires Java, Maven, MySQL, and Node.js.
+
+1. Configure and start a local MySQL database.
+2. Review the Spring Boot database settings in `src/main/resources/application.properties`.
+3. Start the Spring Boot application.
+4. Open the `frontend` directory and run `npm ci` followed by `npm run dev`.
+
+During local development, the Vite proxy forwards `/api` requests to `localhost:8080`.
+
+The full-stack application is intended for a configured development environment. Its backend, administrative functions, and order-processing features are not exposed through the public demo.
+
+## What I Am Learning
+
+Through this project, I am gaining hands-on experience with:
+
+- Building reusable React components and interactive interfaces
+- Developing backend functionality with Java and Spring Boot
+- Designing and working with relational databases
+- Connecting frontend applications to REST APIs
+- Managing source code and project updates with Git and GitHub
+- Understanding the structure and responsibilities of full-stack applications
+
+My goal is to continue improving the application, expand my technical knowledge, and develop the practical skills needed for a junior software development role.
+
+## Demo Limitations and Privacy
+
+This project is intended for educational and portfolio purposes.
+
+The public demo does not process real payments, place real orders, or send checkout data to a backend. Visitors should use fictional information when testing checkout functionality.
+
+Some images may be loaded from Unsplash, an external image provider.
+
+## Author
+
+**Šimon Kostovčík**
+
+Aspiring Junior Developer | IT Technician
+
+[GitHub Profile](https://github.com/simokostovcik-hash) | [Project Repository](https://github.com/simokostovcik-hash/projekt_sklad)
