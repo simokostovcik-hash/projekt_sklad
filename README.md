@@ -1,51 +1,44 @@
-# Coffee Storage and Inventory System
+# Kávový sklad – veřejné demo e-shopu
 
-A Spring Boot web application designed for coffee warehouse management. This system allows tracking coffee stock levels, managing partner roasteries, and provides a secure interface for different user roles.
+Projekt obsahuje React/Vite frontend a samostatný Spring Boot backend s MySQL. **Veřejné demo používá pouze frontend a simulovaná data**, takže se nic skutečně neobjednává, neplatí a nikam se neposílají osobní údaje.
 
-## Key Features
+## Veřejné preview
 
-* **Inventory Tracking**: Management of coffee varieties, weight, pricing, and stock status (In Stock, Out of Stock, Ordered).
-* **Roastery Management**: Dedicated module to manage roastery details including country of origin and contact information.
-* **Role-Based Access Control**:
-    * **ADMIN**: Full authority to create, update, and delete inventory and roasteries.
-    * **USER**: Read-only access to browse inventory and apply filters.
-* **Advanced Filtering and Sorting**: JavaScript-powered dynamic filtering and multi-column table sorting.
-* **Audit Logging**: Backend logging system for administrative actions to ensure accountability.
-* **Data Seeding**: Functionality to populate the database from JSON sources via a dedicated generation endpoint.
+Po publikaci repozitáře `projekt_sklad` na účtu `simokostovcik-hash` bude ukázka dostupná na:
 
-## Tech Stack
+**https://simokostovcik-hash.github.io/projekt_sklad/**
 
-* **Backend**: Java 23, Spring Boot 3.2.2, Spring Security
-* **Persistence**: Spring Data JPA, Hibernate, H2 Database (In-Memory)
-* **Frontend**: Thymeleaf, Bootstrap 5, JavaScript (ES6+)
-* **Build Tool**: Maven
+Pokud se repozitář jmenuje jinak, změňte v odkazu název za `github.io/`. Odkaz začne fungovat až po úspěšném nasazení GitHub Pages.
 
-## Project Structure
+## Jak zveřejnit
 
-```text
-src/main/java/cz/project_storage/
-├── controller/    # Web Request Handlers
-├── model/         # JPA Entities (Coffee, Roastery, User, AuditLog)
-├── repository/    # Data Access Layer
-├── service/       # Business Logic Layer
-└── security/      # Security Configuration
+1. Nahrajte obsah této složky do GitHub repozitáře (bez `.git`, databází, `.env`, `node_modules` a `target`).
+2. GitHub → **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+3. GitHub → **Actions** → počkejte na dokončení workflow `Deploy demo to GitHub Pages`.
+4. Otevřete URL uvedenou v Pages nebo výše (podle názvu repozitáře).
+
+## Co ve veřejném demu funguje
+
+- Prohlížení katalogu, filtrování, košík, checkout a simulovaná platba.
+- Testovací objednávky existují pouze v paměti aktuálně otevřené stránky. Po obnovení stránky zmizí.
+- Po platbě lze stáhnout **textové DEMO potvrzení**, nikoli fakturu.
+- Formulář neodesílá data na žádný backend. Používejte smyšlené údaje.
+
+## Lokální vývoj s backendem
+
+Pro plný původní projekt: spusťte MySQL, Spring Boot podle `src/main/resources/application.properties` a ve `frontend` spusťte `npm ci` a `npm run dev`. Vite proxy předává `/api` na `localhost:8080`. Vývojový režim nepoužívá veřejnou simulaci. **Backend nepřipojujte přímo k veřejnému demu** – obsahuje administrační funkce a zpracování objednávek, které vyžadují samostatný bezpečnostní audit.
+
+## Lokální test veřejné verze
+
+```bash
+cd frontend
+npm ci
+npm run build
+npm run preview
 ```
 
-Getting Started
-Prerequisites
-JDK 23 (or compatible version 21+)
+V produkčním sestavení je nastaveno `VITE_PUBLIC_DEMO=true` v `frontend/.env.production`.
 
-Maven
+## Poznámka k ochraně soukromí
 
-Installation and Execution
-Clone the repository:
-git clone [https://github.com/simokostovcik-hash/projekt_sklad.git](https://github.com/simokostovcik-hash/projekt_sklad.git)
-
-Build and run the application:
-mvn spring-boot:run
-
-Access the application at: http://localhost:8080
-(role_admin) Login: admin / Password: admin123
-
-Data Generation
-To populate the database with sample data for testing purposes, log in as an Admin and navigate to the Generate link (http://localhost:8080/test/generate-data). This executes the generation logic within the StorageController, which parses predefined entries from the data.json resource into the H2 database.
+Veřejné demo nepoužívá databázi ani neposílá e-maily. Obrázky mohou být načítány z externí služby Unsplash, což může znamenat přenos IP adresy třetí straně; pro zcela nezávislé nasazení nahraďte externí obrázky lokálními.
