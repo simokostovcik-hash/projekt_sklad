@@ -117,13 +117,17 @@ Through this project, I am gaining hands-on experience with:
 
 My goal is to continue improving the application, expand my technical knowledge, and develop the practical skills needed for a junior software development role.
 
-## Demo Limitations and Privacy
+## Demo Access and Backend
 
-This project is intended for educational and portfolio purposes.
+The public demo is available without registration or login.
 
-The public demo does not process real payments, place real orders, or send checkout data to a backend. Visitors should use fictional information when testing checkout functionality.
+Visitors can explore the coffee catalogue, manage a shopping cart, and test the checkout process using simulated data. No real payments or orders are processed.
 
-Some images may be loaded from Unsplash, an external image provider.
+The repository also contains the Java Spring Boot backend and MySQL integration developed for the full-stack application.
+
+For security reasons, the backend and administrative features are not publicly accessible. The source code is available in this repository for anyone interested in reviewing the implementation.
+
+The public demo focuses on showcasing the user interface and customer shopping experience, while the repository demonstrates the broader full-stack development work.
 
 ## Author
 
