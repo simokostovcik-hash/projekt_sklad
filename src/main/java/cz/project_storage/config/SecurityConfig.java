@@ -47,6 +47,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/api/orders", "/api/payments/demo/complete").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/orders/*/invoice").permitAll()
                         .requestMatchers("/api/**").denyAll()
 
                         .requestMatchers(HttpMethod.POST, "/orders/status/**").hasRole("ADMIN")
