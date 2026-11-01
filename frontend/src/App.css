@@ -1072,3 +1072,40 @@ p {
 .demo-payment-warning { background:#fff4d6; padding:12px; border-radius:10px; font-size:14px; }
 .demo-payment-card .checkout-btn { width:100%; margin-top:18px; min-height:52px; }
 .demo-payment-back { display:block; margin:20px auto 0; padding:10px; background:none; border:0; text-decoration:underline; cursor:pointer; }
+
+/* ===== PORTFOLIO-INSPIRED REDESIGN / 2026 ===== */
+:root { --bg:#f6f5ef; --surface:#f6f5ef; --catalog-bg:#e9ece3; --accent:#bdff69; --heading-accent:#729466; --primary:#1b211c; --header-bg:#f6f5efed; }
+:root[data-theme='dark'] { --bg:#151917; --surface:#202721; --catalog-bg:#1b231d; --accent:#bdff69; --heading-accent:#a8d78e; --primary:#bdff69; --header-bg:#151917ed; }
+.site { overflow-x:clip; padding-bottom:110px; }
+.header { height:72px; }
+.logo { font-weight:800; letter-spacing:-.11em; }
+.hero { padding-top:clamp(80px,10vw,150px); padding-bottom:85px; position:relative; }
+.hero:after { content:'✳'; position:absolute; right:7%; top:19%; color:#cbdcb9; font-size:clamp(80px,10vw,170px); font-weight:200; pointer-events:none; animation:star-turn 36s linear infinite; opacity:.8; }
+.hero h1 { position:relative; z-index:1; font-size:clamp(64px,10vw,146px); }
+.hero-lower { position:relative; z-index:1; }
+.pill,.bag,.checkout-btn { transition:transform .22s ease, box-shadow .22s ease, background .22s ease; }
+.pill:hover,.bag:hover,.checkout-btn:hover:not(:disabled) { transform:translateY(-3px); box-shadow:0 12px 25px #00000015; }
+.product { transition:transform .28s ease,box-shadow .28s ease; }
+.product:hover { transform:translateY(-5px); box-shadow:0 20px 38px #00000012; }
+.product-image img { transition:transform .45s ease; }
+.product:hover .product-image img { transform:scale(1.045); }
+.floating-dock { position:fixed; bottom:max(20px,env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); z-index:70; display:flex; align-items:center; gap:4px; padding:8px; background:#202b21f2; color:#e9f0e8; border:1px solid #ffffff22; border-radius:22px; box-shadow:0 18px 48px #0004; backdrop-filter:blur(20px); max-width:calc(100vw - 24px); }
+.dock-link { display:flex; align-items:center; justify-content:center; gap:7px; border:0; background:transparent; color:inherit; border-radius:15px; padding:13px 14px; font-size:12px; font-weight:800; white-space:nowrap; cursor:pointer; transition:background .2s,transform .2s,color .2s; }
+.dock-link:hover { background:#ffffff18; transform:translateY(-2px); }
+.dock-link.active { background:#bdff69; color:#1b211c; }
+.dock-cart { position:relative; }
+.dock-cart b { display:grid;place-items:center;min-width:17px;height:17px;border-radius:50%;background:#bdff69;color:#1b211c;font-size:10px; }
+.payment-success-actions { display:grid;justify-items:center;gap:18px;margin-top:18px; }
+.invoice-download { display:inline-flex;justify-content:center;align-items:center;gap:10px;border:0;border-radius:999px;background:#202b21;color:#fff;padding:17px 25px;font-weight:800;transition:transform .2s,background .2s; }
+.invoice-download:hover:not(:disabled) { transform:translateY(-3px);background:#375339; }
+.demo-payment-card { box-shadow:0 25px 80px #1c211c16; }
+@keyframes star-turn { to { transform:rotate(360deg); } }
+@media(max-width:680px) { .header { padding:0 18px; } .hero { padding-top:78px; padding-bottom:40px; } .hero:after { right:3%;top:8%;font-size:80px;opacity:.45; } .hero h1 { font-size:clamp(52px,13vw,90px); } .floating-dock { width:calc(100% - 24px); justify-content:space-between; padding:6px; bottom:max(12px,env(safe-area-inset-bottom)); } .dock-link { flex:1; flex-direction:column; gap:4px; padding:10px 3px; font-size:10px; min-width:0; } .dock-link svg { width:20px;height:20px; } .dock-cart b { position:absolute;top:0;right:8px; } .demo-payment-card { width:calc(100% - 28px); padding:30px 20px; } .invoice-download { width:100%; } }
+@media(prefers-reduced-motion:reduce) { .hero:after { animation:none; } .product,.pill,.bag,.checkout-btn,.dock-link { transition:none; } }
+
+/* Prostor pod obsahem, aby dock nezakrýval patičku */
+.site { padding-bottom: 92px; }
+html { scroll-behavior: smooth; }
+
+.public-demo-banner { position: relative; z-index: 1; background: #253b2b; color: #fff; text-align: center; padding: 5px 12px; font-size: 11px; font-weight: 600; letter-spacing: .01em; }
+

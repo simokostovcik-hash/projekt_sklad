@@ -1,5 +1,8 @@
+import { demoCoffees, isPublicDemo, createDemoOrder, completePublicDemoPayment, downloadDemoReceipt } from './publicDemo';
+
 
 export async function getCoffees() {
+ if (isPublicDemo) return demoCoffees;
  const response = await fetch('/api/coffees');
 
  if (!response.ok) {
@@ -12,6 +15,7 @@ export async function getCoffees() {
 }
 
 export async function submitOrder(payload) {
+ if (isPublicDemo) return createDemoOrder(payload);
  const response = await fetch('/api/orders', {
   method: 'POST',
   headers: {
@@ -33,6 +37,7 @@ export async function submitOrder(payload) {
 }
 
 export async function completeDemoPayment(orderId, paymentToken) {
+ if (isPublicDemo) return completePublicDemoPayment(orderId, paymentToken);
  const response = await fetch('/api/payments/demo/complete', {
   method: 'POST',
   headers: {
@@ -56,6 +61,7 @@ export async function completeDemoPayment(orderId, paymentToken) {
 }
 
 export async function downloadInvoice(orderId, paymentToken) {
+ if (isPublicDemo) return downloadDemoReceipt(orderId, paymentToken);
  if (!orderId || !paymentToken) {
   throw new Error(
       'Chybí číslo objednávky nebo platební token.'

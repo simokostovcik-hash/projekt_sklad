@@ -9,11 +9,13 @@ import {
  Moon,
  Plus,
  ShoppingBag,
+ Home, Coffee, Heart, FileDown, Sparkles,
  Sun,
  Trash2,
  X
 } from 'lucide-react';
-import { getCoffees, submitOrder, completeDemoPayment } from './api/coffeeApi';
+import { getCoffees, submitOrder, completeDemoPayment, downloadInvoice } from './api/coffeeApi';
+import { isPublicDemo } from './api/publicDemo';
 import './App.css';
 
 const fallback =
@@ -49,6 +51,9 @@ export default function App() {
  const [paymentBusy, setPaymentBusy] = useState(false);
  const [paymentError, setPaymentError] = useState('');
  const [paymentResult, setPaymentResult] = useState(null);
+ const [invoiceBusy, setInvoiceBusy] = useState(false);
+ const [invoiceError, setInvoiceError] = useState('');
+ const [activeDock, setActiveDock] = useState('nahoru');
 
  const [busy, setBusy] = useState(false);
  const [notice, setNotice] = useState('');
@@ -271,6 +276,14 @@ export default function App() {
     setPaymentBusy(false);
    }
   }
+  async function handleInvoice() {
+   if (invoiceBusy) return;
+   setInvoiceBusy(true);
+   setInvoiceError('');
+   try { await downloadInvoice(payment.orderId, payment.paymentToken); }
+   catch (err) { setInvoiceError(err.message || 'Fakturu se nepodařilo stáhnout.'); }
+   finally { setInvoiceBusy(false); }
+  }
   return (
    <main className="demo-payment-page">
     <section className="demo-payment-card">
@@ -281,9 +294,15 @@ export default function App() {
      <p>Potvrzení pro: {payment.email}</p>
      <p className="demo-payment-warning">DEMO – žádné skutečné peníze se nepřevádějí.</p>
      {paymentResult ? (
-      <p role="status">✓ Stav COMPLETED. {paymentResult.emailSent
-        ? 'Potvrzovací e-mail byl odeslán.'
-        : 'E-mail nebyl odeslán. Zkontrolujte nastavení SMTP.'}</p>
+      <div className="payment-success-actions">
+       <p role="status">✓ Stav COMPLETED. {paymentResult.emailSent
+         ? 'Potvrzovací e-mail byl odeslán.'
+         : isPublicDemo ? 'Ve veřejném demu se e-maily neposílají.' : 'E-mail nebyl odeslán. Zkontrolujte nastavení SMTP.'}</p>
+       <button type="button" className="invoice-download" disabled={invoiceBusy} onClick={handleInvoice}>
+        <FileDown size={20} /> {invoiceBusy ? (isPublicDemo ? 'Připravuji potvrzení…' : 'Připravuji fakturu…') : isPublicDemo ? 'Stáhnout DEMO potvrzení' : 'Stáhnout PDF fakturu'}
+       </button>
+       {invoiceError && <p role="alert" className="form-error">{invoiceError}</p>}
+      </div>
      ) : (
       <>
        {paymentError && <p role="alert" className="form-error">{paymentError}</p>}
@@ -652,11 +671,20 @@ export default function App() {
        </section>
       </main>
 
+      {/* PLOVOUCÍ RYCHLÁ NAVIGACE – viditelná i při scrollování */}
+      <nav className="floating-dock" aria-label="Rychlá navigace">
+       <a className={`dock-link ${activeDock === 'nahoru' ? 'active' : ''}`} href="#nahoru" onClick={() => setActiveDock('nahoru')}><Home size={17} /><span>Úvod</span></a>
+       <a className={`dock-link ${activeDock === 'kolekce' ? 'active' : ''}`} href="#kolekce" onClick={() => setActiveDock('kolekce')}><Coffee size={17} /><span>Naše kávy</span></a>
+       <a className={`dock-link ${activeDock === 'pristup' ? 'active' : ''}`} href="#pristup" onClick={() => setActiveDock('pristup')}><Sparkles size={17} /><span>Přístup</span></a>
+       <a className={`dock-link ${activeDock === 'kontakt' ? 'active' : ''}`} href="#kontakt" onClick={() => setActiveDock('kontakt')}><Heart size={17} /><span>Kontakt</span></a>
+       <button type="button" className="dock-link dock-cart" onClick={() => setDrawer(true)}><ShoppingBag size={17} /><span>Košík</span>{count > 0 && <b>{count}</b>}</button>
+      </nav>
+
       {/* PATIČKA */}
       <footer className="footer">
        <div className="wrap footer-inner">
         <a className="logo" href="#nahoru">
-         COFFEE<span>.</span>
+         KS<span>.</span>
         </a>
 
         <span>
